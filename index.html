@@ -1,24 +1,590 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-  <title>Caro Online</title>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <style>
-    body { text-align:center; font-family: Arial; }
-    #board { display:grid; grid-template-columns: repeat(15, 30px); gap:2px; justify-content:center; }
-    .cell { width:30px; height:30px; background:#eee; cursor:pointer; font-size:20px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Caro Đỉnh Cao - Giao Diện Sang Trọng</title>
+    <style>
+        * {
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1a472a 0%, #0a2a1a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Poppins', 'Quicksand', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Container chính */
+        .game-container {
+            max-width: 850px;
+            width: 100%;
+            background: rgba(30, 20, 12, 0.65);
+            backdrop-filter: blur(4px);
+            border-radius: 64px;
+            padding: 20px 24px 28px;
+            box-shadow: 0 30px 40px rgba(0,0,0,0.5), inset 0 1px 3px rgba(255,245,200,0.5);
+            border: 1px solid #e9cf8e;
+            transition: all 0.2s;
+        }
+
+        /* Header đẹp */
+        .game-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .game-header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #FFE6B0, #FFB347);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            letter-spacing: 2px;
+        }
+        .game-header p {
+            color: #f7e5b5;
+            margin: 5px 0 0;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* Khu vực bàn cờ nâng cấp */
+        .board-wrapper {
+            background: #c7a45b;
+            border-radius: 40px;
+            padding: 18px;
+            box-shadow: inset 0 0 0 3px #fcf3cf, 0 15px 25px rgba(0,0,0,0.3);
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 28px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.4);
+            cursor: pointer;
+            width: 100%;
+            height: auto;
+            background-color: #faf0cf;
+        }
+
+        /* Thanh thông tin cao cấp */
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 20px;
+            margin-bottom: 12px;
+        }
+
+        .turn-card {
+            background: #2c2419;
+            border-radius: 60px;
+            padding: 6px 24px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: inset 0 1px 3px #ffecb3, 0 5px 10px rgba(0,0,0,0.3);
+        }
+        .piece-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #e63946;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 2px 8px black;
+        }
+        .piece-icon.O-turn {
+            background: #3b82f6;
+        }
+        .turn-text {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #fbe9c3;
+            letter-spacing: 1px;
+        }
+
+        .score-glass {
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(8px);
+            border-radius: 48px;
+            padding: 6px 24px;
+            display: flex;
+            gap: 28px;
+            font-weight: bold;
+            border: 1px solid #fad37b;
+        }
+        .score-item {
+            font-size: 1.2rem;
+            color: #ffe6b3;
+        }
+        .score-item span {
+            font-size: 2rem;
+            margin-left: 8px;
+            color: #ffcd7e;
+            font-weight: 800;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+        }
+        .btn {
+            border: none;
+            background: #f7b32b;
+            padding: 8px 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            border-radius: 40px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: 0.08s linear;
+            box-shadow: 0 4px 0 0 #7a4a1a;
+            color: #2c1e0c;
+        }
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 0 #7a4a1a;
+        }
+        .btn-secondary {
+            background: #bc8f4b;
+            box-shadow: 0 4px 0 0 #61401a;
+            color: #fff2df;
+        }
+
+        .status-message {
+            background: #00000099;
+            backdrop-filter: blur(12px);
+            border-radius: 36px;
+            padding: 10px 18px;
+            text-align: center;
+            font-weight: bold;
+            color: #fff0c0;
+            font-size: 1rem;
+            margin-top: 14px;
+            border: 1px solid #ffde9e;
+        }
+
+        @media (max-width: 620px) {
+            .game-container { padding: 14px 16px 20px; }
+            .turn-text { font-size: 1rem; }
+            .piece-icon { width: 34px; height: 34px; font-size: 22px; }
+            .score-item { font-size: 0.9rem; }
+            .score-item span { font-size: 1.5rem; }
+            .btn { padding: 5px 14px; font-size: 0.85rem; }
+        }
+    </style>
 </head>
 <body>
+<div class="game-container">
+    <div class="game-header">
+        <h1>⚡ CARO KINH ĐIỂN ⚡</h1>
+        <p>✨ 15x15 · 5 quân thắng · Giao diện cao cấp ✨</p>
+    </div>
 
-<h1>🎮 Caro Online</h1>
-<button onclick="createRoom()">Tạo phòng</button>
-<input id="roomId" placeholder="Nhập mã phòng">
-<button onclick="joinRoom()">Vào phòng</button>
+    <div class="board-wrapper">
+        <canvas id="caroCanvas" width="660" height="660" style="width:100%; height:auto; max-width:660px; aspect-ratio:1/1"></canvas>
+    </div>
 
-<div id="board"></div>
+    <div class="info-panel">
+        <div class="turn-card" id="turnCard">
+            <div class="piece-icon" id="pieceIcon">❌</div>
+            <div class="turn-text" id="turnText">Lượt: X</div>
+        </div>
+        <div class="score-glass">
+            <div class="score-item">❌ X <span id="scoreX">0</span></div>
+            <div class="score-item">⭕ O <span id="scoreO">0</span></div>
+        </div>
+        <div class="btn-group">
+            <button class="btn" id="resetGameBtn">🔄 Ván mới</button>
+            <button class="btn btn-secondary" id="fullResetBtn">🏆 Reset điểm</button>
+        </div>
+    </div>
+    <div class="status-message" id="statusMsg">
+        ✨ Lượt của X — hãy đặt quân cờ ✨
+    </div>
+</div>
 
-<script src="script.js"></script>
+<script>
+    (function(){
+        // ---------- CẤU HÌNH CARO 15x15 ----------
+        const BOARD_SIZE = 15;
+        let board = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null)); // 'X' or 'O'
+        let currentTurn = 'X';
+        let gameActive = true;
+        let winner = null;
+        let isDraw = false;
+        
+        // Điểm số
+        let scoreX = 0;
+        let scoreO = 0;
+        
+        // Canvas elements
+        const canvas = document.getElementById('caroCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Kích thước cell và offset
+        let cellSize = 0;
+        let offsetX = 0, offsetY = 0;
+        
+        // ========== CÁC HÀM TIỆN ÍCH ==========
+        function calcDimensions() {
+            const size = canvas.width; // 660px
+            const margin = 34;
+            const available = size - margin * 2;
+            cellSize = available / (BOARD_SIZE - 1);
+            offsetX = margin;
+            offsetY = margin;
+        }
+        
+        // Cập nhật UI điểm
+        function updateScoreUI() {
+            document.getElementById('scoreX').innerText = scoreX;
+            document.getElementById('scoreO').innerText = scoreO;
+        }
+        
+        // Cập nhật giao diện lượt chơi & trạng thái
+        function updateTurnUI() {
+            const turnTextDiv = document.getElementById('turnText');
+            const pieceIconDiv = document.getElementById('pieceIcon');
+            if(!gameActive) {
+                if(winner === 'X') {
+                    turnTextDiv.innerText = '🏆 X THẮNG!';
+                    pieceIconDiv.innerText = '❌';
+                    pieceIconDiv.style.background = '#e63946';
+                } else if(winner === 'O') {
+                    turnTextDiv.innerText = '🏆 O THẮNG!';
+                    pieceIconDiv.innerText = '⭕';
+                    pieceIconDiv.style.background = '#3b82f6';
+                } else if(isDraw) {
+                    turnTextDiv.innerText = '🤝 HÒA CỜ';
+                    pieceIconDiv.innerText = '🤝';
+                    pieceIconDiv.style.background = '#aa8c54';
+                } else {
+                    turnTextDiv.innerText = currentTurn === 'X' ? 'Lượt: X' : 'Lượt: O';
+                    pieceIconDiv.innerText = currentTurn === 'X' ? '❌' : '⭕';
+                    pieceIconDiv.style.background = currentTurn === 'X' ? '#e63946' : '#3b82f6';
+                }
+                return;
+            }
+            turnTextDiv.innerText = currentTurn === 'X' ? 'Lượt: X' : 'Lượt: O';
+            pieceIconDiv.innerText = currentTurn === 'X' ? '❌' : '⭕';
+            pieceIconDiv.style.background = currentTurn === 'X' ? '#e63946' : '#3b82f6';
+        }
+        
+        function updateStatusMessage() {
+            const msgDiv = document.getElementById('statusMsg');
+            if(!gameActive) {
+                if(winner === 'X') msgDiv.innerHTML = '🎉 CHIẾN THẮNG THUỘC VỀ ❌ X! BẤM "Ván mới" ĐỂ ĐẤU TIẾP 🎉';
+                else if(winner === 'O') msgDiv.innerHTML = '🎉 CHIẾN THẮNG THUỘC VỀ ⭕ O! BẤM "Ván mới" ĐỂ ĐẤU TIẾP 🎉';
+                else if(isDraw) msgDiv.innerHTML = '🤝 VÁN CỜ HÒA! HÃY BẮT ĐẦU VÁN MỚI 🤝';
+                else msgDiv.innerHTML = '⚡ TRÒ CHƠI KẾT THÚC ⚡';
+                return;
+            }
+            msgDiv.innerHTML = currentTurn === 'X' ? '❌ Đến lượt X — hãy đặt quân lên bàn cờ' : '⭕ Đến lượt O — suy nghĩ chiến thuật nào!';
+        }
+        
+        // KIỂM TRA THẮNG (Gomoku chuẩn)
+        function checkWin(row, col, player) {
+            const directions = [[1,0],[0,1],[1,1],[1,-1]];
+            for(let [dx, dy] of directions) {
+                let count = 1;
+                // xuôi
+                for(let step = 1; step <= 4; step++) {
+                    const nr = row + dx*step, nc = col + dy*step;
+                    if(nr<0 || nr>=BOARD_SIZE || nc<0 || nc>=BOARD_SIZE) break;
+                    if(board[nr][nc] === player) count++;
+                    else break;
+                }
+                // ngược
+                for(let step = 1; step <= 4; step++) {
+                    const nr = row - dx*step, nc = col - dy*step;
+                    if(nr<0 || nr>=BOARD_SIZE || nc<0 || nc>=BOARD_SIZE) break;
+                    if(board[nr][nc] === player) count++;
+                    else break;
+                }
+                if(count >= 5) return true;
+            }
+            return false;
+        }
+        
+        function checkDrawFull() {
+            for(let i=0; i<BOARD_SIZE; i++) {
+                for(let j=0; j<BOARD_SIZE; j++) {
+                    if(board[i][j] === null) return false;
+                }
+            }
+            return true;
+        }
+        
+        // Xử lý nước đi
+        function placePiece(row, col) {
+            if(!gameActive) return false;
+            if(row<0 || row>=BOARD_SIZE || col<0 || col>=BOARD_SIZE) return false;
+            if(board[row][col] !== null) return false;
+            
+            // Đặt quân
+            board[row][col] = currentTurn;
+            drawBoard(); // vẽ ngay
+            
+            // Kiểm tra thắng
+            const win = checkWin(row, col, currentTurn);
+            if(win) {
+                gameActive = false;
+                winner = currentTurn;
+                if(winner === 'X') scoreX++;
+                else scoreO++;
+                updateScoreUI();
+                updateTurnUI();
+                updateStatusMessage();
+                drawBoard();
+                return true;
+            }
+            
+            // Hòa
+            const drawFull = checkDrawFull();
+            if(drawFull) {
+                gameActive = false;
+                isDraw = true;
+                winner = null;
+                updateTurnUI();
+                updateStatusMessage();
+                drawBoard();
+                return true;
+            }
+            
+            // Đổi lượt
+            currentTurn = (currentTurn === 'X') ? 'O' : 'X';
+            updateTurnUI();
+            updateStatusMessage();
+            drawBoard();
+            return true;
+        }
+        
+        // ========== VẼ BÀN CỜ SIÊU ĐẸP ==========
+        function drawBoard() {
+            if(!ctx) return;
+            calcDimensions();
+            const w = canvas.width, h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+            
+            // nền gỗ ấm
+            ctx.fillStyle = '#faf0cf';
+            ctx.fillRect(0, 0, w, h);
+            
+            // Vẽ lưới caro với hiệu ứng mờ
+            ctx.beginPath();
+            ctx.strokeStyle = '#aa7942';
+            ctx.lineWidth = 1.8;
+            for(let i = 0; i < BOARD_SIZE; i++) {
+                const x = offsetX + i * cellSize;
+                const yStart = offsetY;
+                const yEnd = offsetY + (BOARD_SIZE-1) * cellSize;
+                ctx.beginPath();
+                ctx.moveTo(x, yStart);
+                ctx.lineTo(x, yEnd);
+                ctx.stroke();
+                
+                const y = offsetY + i * cellSize;
+                const xStart = offsetX;
+                const xEnd = offsetX + (BOARD_SIZE-1) * cellSize;
+                ctx.beginPath();
+                ctx.moveTo(xStart, y);
+                ctx.lineTo(xEnd, y);
+                ctx.stroke();
+            }
+            
+            // Vẽ các điểm sao (ngôi sao 5 vị trí)
+            const starPoints = [[3,3],[11,3],[7,7],[3,11],[11,11]];
+            for(let [r,c] of starPoints) {
+                const cx = offsetX + c * cellSize;
+                const cy = offsetY + r * cellSize;
+                ctx.beginPath();
+                ctx.arc(cx, cy, cellSize*0.12, 0, 2*Math.PI);
+                ctx.fillStyle = '#cf9f4a';
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(cx, cy, cellSize*0.07, 0, 2*Math.PI);
+                ctx.fillStyle = '#ffdd99';
+                ctx.fill();
+            }
+            
+            // Vẽ quân cờ
+            for(let i=0; i<BOARD_SIZE; i++) {
+                for(let j=0; j<BOARD_SIZE; j++) {
+                    const val = board[i][j];
+                    if(val === null) continue;
+                    const cx = offsetX + j * cellSize;
+                    const cy = offsetY + i * cellSize;
+                    const radius = cellSize * 0.38;
+                    ctx.shadowBlur = 3;
+                    ctx.shadowColor = 'rgba(0,0,0,0.3)';
+                    if(val === 'X') {
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, radius, 0, 2*Math.PI);
+                        ctx.fillStyle = '#e34d4d';
+                        ctx.fill();
+                        ctx.strokeStyle = '#a12020';
+                        ctx.lineWidth = 1.6;
+                        ctx.stroke();
+                        // vẽ chữ X tinh tế
+                        ctx.beginPath();
+                        ctx.moveTo(cx - radius*0.6, cy - radius*0.6);
+                        ctx.lineTo(cx + radius*0.6, cy + radius*0.6);
+                        ctx.moveTo(cx + radius*0.6, cy - radius*0.6);
+                        ctx.lineTo(cx - radius*0.6, cy + radius*0.6);
+                        ctx.lineWidth = radius*0.45;
+                        ctx.strokeStyle = '#FFF4CF';
+                        ctx.stroke();
+                    } else if(val === 'O') {
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, radius, 0, 2*Math.PI);
+                        ctx.fillStyle = '#4a7db5';
+                        ctx.fill();
+                        ctx.strokeStyle = '#1f4970';
+                        ctx.lineWidth = 1.6;
+                        ctx.stroke();
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, radius*0.65, 0, 2*Math.PI);
+                        ctx.fillStyle = '#faf0cf';
+                        ctx.fill();
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, radius*0.42, 0, 2*Math.PI);
+                        ctx.fillStyle = '#4a7db5';
+                        ctx.fill();
+                    }
+                }
+            }
+            ctx.shadowBlur = 0;
+            
+            // Overlay khi kết thúc game
+            if(!gameActive) {
+                ctx.fillStyle = 'rgba(0,0,0,0.65)';
+                ctx.fillRect(0, 0, w, h);
+                ctx.font = `bold ${Math.floor(cellSize * 1.3)}px "Segoe UI", "Poppins"`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                let msg = '';
+                if(winner === 'X') msg = '❌ X CHIẾN THẮNG!';
+                else if(winner === 'O') msg = '⭕ O CHIẾN THẮNG!';
+                else if(isDraw) msg = '🤝 HÒA CỜ XUẤT SẮC 🤝';
+                else msg = '✨ TRÒ CHƠI KẾT THÚC ✨';
+                ctx.fillStyle = '#FFF5CF';
+                ctx.fillText(msg, w/2, h/2 - 15);
+                ctx.font = `18px monospace`;
+                ctx.fillStyle = '#fce296';
+                ctx.fillText('Nhấn "Ván mới" để tiếp tục', w/2, h/2 + 38);
+                ctx.textAlign = 'left';
+            }
+        }
+        
+        // ========== XỬ LÝ TƯƠNG TÁC CHUỘT/CẢM ỨNG ==========
+        function getBoardIndexFromPixels(clientX, clientY) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const canvasX = (clientX - rect.left) * scaleX;
+            const canvasY = (clientY - rect.top) * scaleY;
+            if(canvasX < offsetX || canvasX > offsetX + (BOARD_SIZE-1)*cellSize) return null;
+            if(canvasY < offsetY || canvasY > offsetY + (BOARD_SIZE-1)*cellSize) return null;
+            let colFloat = (canvasX - offsetX) / cellSize;
+            let rowFloat = (canvasY - offsetY) / cellSize;
+            let col = Math.round(colFloat);
+            let row = Math.round(rowFloat);
+            if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) return null;
+            const centerX = offsetX + col * cellSize;
+            const centerY = offsetY + row * cellSize;
+            const dist = Math.hypot(canvasX - centerX, canvasY - centerY);
+            if(dist > cellSize * 0.45) return null;
+            return { row, col };
+        }
+        
+        function handleCanvasTap(e) {
+            if(!gameActive) return;
+            e.preventDefault();
+            let clientX, clientY;
+            if(e.touches) {
+                if(e.touches.length === 0) return;
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            const pos = getBoardIndexFromPixels(clientX, clientY);
+            if(pos) {
+                placePiece(pos.row, pos.col);
+            }
+        }
+        
+        // ========== RESET GAME ==========
+        function resetGameKeepScore() {
+            board = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null));
+            currentTurn = 'X';
+            gameActive = true;
+            winner = null;
+            isDraw = false;
+            updateTurnUI();
+            updateStatusMessage();
+            drawBoard();
+        }
+        
+        function fullResetAll() {
+            scoreX = 0;
+            scoreO = 0;
+            updateScoreUI();
+            board = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null));
+            currentTurn = 'X';
+            gameActive = true;
+            winner = null;
+            isDraw = false;
+            updateTurnUI();
+            updateStatusMessage();
+            drawBoard();
+        }
+        
+        // ========== SỰ KIỆN & KHỞI TẠO ==========
+        function bindEvents() {
+            canvas.addEventListener('click', handleCanvasTap);
+            canvas.addEventListener('touchstart', handleCanvasTap, { passive: false });
+            canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+            document.getElementById('resetGameBtn').addEventListener('click', () => resetGameKeepScore());
+            document.getElementById('fullResetBtn').addEventListener('click', () => fullResetAll());
+        }
+        
+        function init() {
+            calcDimensions();
+            bindEvents();
+            // khởi tạo bàn cờ trống
+            board = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null));
+            currentTurn = 'X';
+            gameActive = true;
+            winner = null;
+            isDraw = false;
+            scoreX = 0;
+            scoreO = 0;
+            updateScoreUI();
+            updateTurnUI();
+            updateStatusMessage();
+            drawBoard();
+        }
+        
+        init();
+    })();
+</script>
 </body>
 </html>

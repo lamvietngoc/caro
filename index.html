@@ -53,7 +53,6 @@
       font-size: 0.8rem;
     }
 
-    /* Mã phòng nổi bật trên đầu */
     .room-code-top {
       background: linear-gradient(135deg, #f7b32b, #e69500);
       text-align: center;
@@ -61,13 +60,13 @@
       border-radius: 50px;
       margin-bottom: 20px;
       font-weight: bold;
-      font-size: 1rem;
+      font-size: 1.2rem;
       box-shadow: 0 3px 8px rgba(0,0,0,0.3);
       color: #2c1e0c;
       word-break: break-all;
     }
     .room-code-top span {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       display: block;
       margin-top: 4px;
     }
@@ -105,12 +104,12 @@
       padding: 10px 16px;
       border-radius: 50px;
       font-size: 0.9rem;
-      width: 160px;
+      width: 120px;
       outline: none;
       text-align: center;
+      font-weight: bold;
     }
 
-    /* Bàn cờ - đã fix lỗi mobile */
     .board-container {
       background: #c7a45b;
       border-radius: 24px;
@@ -207,11 +206,15 @@
       font-size: 0.85rem;
       margin-top: 12px;
     }
+    .reset-btn {
+      background: #2ecc71;
+      box-shadow: 0 3px 0 0 #1e8e4a;
+    }
 
     @media (max-width: 550px) {
       .game-wrapper { padding: 14px; }
       .room-btn { padding: 6px 14px; font-size: 0.75rem; }
-      .room-input { width: 130px; font-size: 0.75rem; }
+      .room-input { width: 100px; font-size: 0.75rem; }
       .turn-text { font-size: 0.8rem; }
       .piece-badge { width: 32px; height: 32px; font-size: 18px; }
     }
@@ -225,15 +228,15 @@
     <p>Tạo phòng - Mời bạn - Đấu trí 15x15</p>
   </div>
 
-  <!-- Mã phòng hiển thị trên đầu -->
   <div id="roomCodeTop" class="room-code-top">
     🏠 Chưa có phòng
   </div>
 
   <div class="room-panel">
     <button class="room-btn" id="createRoomBtn">🎲 Tạo phòng</button>
-    <input type="text" id="roomIdInput" class="room-input" placeholder="Nhập mã phòng">
+    <input type="text" id="roomIdInput" class="room-input" placeholder="Mã số" maxlength="3">
     <button class="room-btn" id="joinRoomBtn">🚪 Vào phòng (O)</button>
+    <button class="room-btn reset-btn" id="resetGameBtn">🔄 Reset ván</button>
   </div>
 
   <div class="board-container">
@@ -253,7 +256,6 @@
 </div>
 
 <script>
-  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyB8d-H_rfEfJb5l-ArLjpeqPZHeh_9PD6k",
     authDomain: "caro-online-7c577.firebaseapp.com",
@@ -278,7 +280,11 @@
   const pieceBadgeDiv = document.getElementById("pieceBadge");
   const statusMsgDiv = document.getElementById("statusMsg");
 
-  // Kiểm tra thắng 5 dòng
+  // Tạo mã phòng ngẫu nhiên 3 chữ số (100-999)
+  function generateRoomCode() {
+    return Math.floor(Math.random() * 900) + 100;
+  }
+
   function checkWinner(boardArray, lastIdx, curPlayer) {
     const size = 15;
     const row = Math.floor(lastIdx / size);
@@ -331,6 +337,27 @@
     }
   }
 
+  // Reset ván cờ (giữ nguyên phòng, xóa bàn cờ, reset lượt)
+  function resetGame() {
+    if (!room) {
+      statusMsgDiv.innerText = "⚠️ Chưa có phòng để reset!";
+      return;
+    }
+    
+    const roomRef = db.ref(room);
+    const initialBoard = Array(225).fill("");
+    roomRef.update({
+      board: initialBoard,
+      turn: "X",
+      winner: null,
+      gameOver: false
+    }).then(() => {
+      statusMsgDiv.innerText = "🔄 Đã reset ván cờ! Bắt đầu lại từ đầu.";
+    }).catch(() => {
+      statusMsgDiv.innerText = "Lỗi reset! Thử lại.";
+    });
+  }
+
   function onCellClick(index) {
     if (!room) {
       statusMsgDiv.innerText = "⚠️ Hãy tạo hoặc tham gia phòng!";
@@ -353,7 +380,7 @@
       const turn = data.turn;
       
       if (data.winner && data.winner !== "") {
-        statusMsgDiv.innerText = `🏆 Trận đã kết thúc! ${data.winner} thắng.`;
+        statusMsgDiv.innerText = `🏆 Trận đã kết thúc! Nhấn "Reset ván" để chơi tiếp.`;
         return;
       }
       
@@ -374,7 +401,7 @@
       if (isWin) {
         updateData.winner = player;
         updateData.gameOver = true;
-        statusMsgDiv.innerText = `🎉 CHIẾN THẮNG! ${player} thắng cuộc! 🎉`;
+        statusMsgDiv.innerText = `🎉 CHIẾN THẮNG! ${player} thắng cuộc! Nhấn "Reset ván" để chơi tiếp. 🎉`;
       }
       
       roomRef.update(updateData).then(() => {
@@ -401,8 +428,7 @@
       
       renderBoard(boardArr);
       
-      // Cập nhật mã phòng trên đầu
-      roomCodeTop.innerHTML = `🔑 MÃ PHÒNG: <strong style="font-size:1.2rem;">${room}</strong> 🔑<span>⭐ Gửi mã này cho bạn để cùng chơi ⭐</span>`;
+      roomCodeTop.innerHTML = `🔑 MÃ PHÒNG: <strong style="font-size:1.5rem;">${room}</strong> 🔑<span>⭐ Gửi mã này cho bạn để cùng chơi ⭐</span>`;
       roomCodeTop.style.background = "linear-gradient(135deg, #2ecc71, #27ae60)";
       roomCodeTop.style.color = "white";
       roomCodeDisplaySpan.innerHTML = `🔑 Mã: ${room}`;
@@ -411,7 +437,6 @@
         turnTextSpan.innerText = winner === "X" ? "❌ X THẮNG" : "⭕ O THẮNG";
         pieceBadgeDiv.innerText = winner === "X" ? "❌" : "⭕";
         pieceBadgeDiv.style.background = winner === "X" ? "#e63946" : "#3b82f6";
-        statusMsgDiv.innerHTML = `🏆 KẾT THÚC! ${winner} thắng. Tạo phòng mới để chơi tiếp. 🏆`;
         return;
       }
       
@@ -458,7 +483,7 @@
     if (room) {
       db.ref(room).off();
     }
-    const newRoom = "room_" + Math.floor(Math.random() * 100000);
+    const newRoom = generateRoomCode().toString();
     room = newRoom;
     player = "X";
     
@@ -471,7 +496,7 @@
     }).then(() => {
       buildBoard();
       subscribeRoom();
-      statusMsgDiv.innerHTML = `🎲 Đã tạo phòng: ${room}. Bạn là X. Mời bạn bè nhập mã này!`;
+      statusMsgDiv.innerHTML = `🎲 Đã tạo phòng: ${room}. Bạn là X. Mời bạn bè nhập mã ${room} để vào!`;
     }).catch(() => {
       statusMsgDiv.innerHTML = "Lỗi tạo phòng!";
       room = "";
@@ -482,7 +507,7 @@
   function joinRoom() {
     const roomCode = roomIdInput.value.trim();
     if (!roomCode) {
-      statusMsgDiv.innerHTML = "⚠️ Nhập mã phòng!";
+      statusMsgDiv.innerHTML = "⚠️ Nhập mã phòng (3 số)!";
       return;
     }
     
@@ -491,10 +516,6 @@
       const data = snap.val();
       if (!data) {
         statusMsgDiv.innerHTML = "❌ Phòng không tồn tại!";
-        return;
-      }
-      if (data.winner && data.winner !== "") {
-        statusMsgDiv.innerHTML = `⚠️ Phòng đã kết thúc (${data.winner} thắng).`;
         return;
       }
       
@@ -519,7 +540,10 @@
     joinRoom();
   };
 
-  // Khởi tạo bàn cờ trống
+  document.getElementById("resetGameBtn").onclick = () => {
+    resetGame();
+  };
+
   function init() {
     boardContainer.innerHTML = "";
     for (let i = 0; i < 225; i++) {

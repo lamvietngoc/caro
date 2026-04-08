@@ -2,12 +2,13 @@
 // DÁN config ở đây
 const firebaseConfig = {
   apiKey: "AIzaSyB8d-H_rfEfJb5l-ArLjpeqPZHeh_9PD6k",
-    authDomain: "caro-online-7c577.firebaseapp.com",
-    projectId: "caro-online-7c577",
-    storageBucket: "caro-online-7c577.firebasestorage.app",
-    messagingSenderId: "587741989273",
-    appId: "1:587741989273:web:df8141888d9e904a002b08",
-    measurementId: "G-2WFXESM4V9"
+  authDomain: "caro-online-7c577.firebaseapp.com",
+  databaseURL: "https://caro-online-7c577-default-rtdb.firebaseio.com", // 👈 THÊM DÒNG NÀY
+  projectId: "caro-online-7c577",
+  storageBucket: "caro-online-7c577.firebasestorage.app",
+  messagingSenderId: "587741989273",
+  appId: "1:587741989273:web:df8141888d9e904a002b08",
+  measurementId: "G-2WFXESM4V9"
 };
 
 firebase.initializeApp(firebaseConfig);

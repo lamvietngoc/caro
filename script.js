@@ -33,7 +33,14 @@ function createRoom() {
 function joinRoom() {
   room = document.getElementById("roomId").value;
   player = "O";
-  startGame();
+
+  db.ref(room).once("value", snap => {
+    if (!snap.exists()) {
+      alert("Phòng không tồn tại!");
+      return;
+    }
+    startGame();
+  });
 }
 
 function startGame() {
@@ -55,18 +62,21 @@ function startGame() {
       c.innerText = data.board[i];
     });
   });
+  console.log("Player:", player);
+console.log("Room:", room);
 }
 
 function move(i) {
   const ref = db.ref(room);
-  ref.once("value", snap => {
-    const data = snap.val();
+
+  ref.transaction(data => {
+    if (!data) return data;
 
     if (data.board[i] === "" && data.turn === player) {
       data.board[i] = player;
       data.turn = player === "X" ? "O" : "X";
-
-      ref.set(data);
     }
+
+    return data;
   });
 }

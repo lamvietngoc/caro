@@ -2,8 +2,8 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Caro Online Đẳng Cấp - Chơi Cùng Bạn Bè</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Caro Online - Chơi cùng bạn bè</title>
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -22,72 +22,78 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: 'Segoe UI', 'Poppins', 'Quicksand', system-ui, -apple-system, sans-serif;
-      padding: 20px;
+      font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif;
+      padding: 16px;
     }
 
-    /* Container chính - hiệu ứng thủy tinh */
     .game-wrapper {
-      max-width: 900px;
+      max-width: 700px;
       width: 100%;
       background: rgba(30, 25, 18, 0.55);
       backdrop-filter: blur(8px);
-      border-radius: 64px;
-      padding: 24px 28px 32px;
-      box-shadow: 0 25px 45px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,250,210,0.4);
+      border-radius: 48px;
+      padding: 20px;
+      box-shadow: 0 25px 45px rgba(0,0,0,0.5);
       border: 1px solid rgba(255,215,130,0.6);
-      transition: all 0.3s ease;
     }
 
-    /* Header */
     .game-header {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
     .game-header h1 {
-      font-size: 2.2rem;
-      background: linear-gradient(135deg, #FFE6B0, #FFB347, #FF8C42);
+      font-size: 1.8rem;
+      background: linear-gradient(135deg, #FFE6B0, #FFB347);
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;
-      text-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      letter-spacing: 2px;
     }
     .game-header p {
       color: #f7e5b5;
-      font-size: 0.9rem;
-      margin-top: 6px;
-      font-weight: 500;
+      font-size: 0.8rem;
     }
 
-    /* Phòng chờ - nâng cấp */
+    /* Mã phòng nổi bật trên đầu */
+    .room-code-top {
+      background: linear-gradient(135deg, #f7b32b, #e69500);
+      text-align: center;
+      padding: 12px 10px;
+      border-radius: 50px;
+      margin-bottom: 20px;
+      font-weight: bold;
+      font-size: 1rem;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+      color: #2c1e0c;
+      word-break: break-all;
+    }
+    .room-code-top span {
+      font-size: 0.75rem;
+      display: block;
+      margin-top: 4px;
+    }
+
     .room-panel {
       background: rgba(0,0,0,0.45);
       backdrop-filter: blur(4px);
       border-radius: 60px;
-      padding: 12px 20px;
+      padding: 12px 16px;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 16px;
-      margin-bottom: 24px;
-      border: 1px solid #e7bc7e;
+      gap: 12px;
+      margin-bottom: 20px;
     }
     .room-btn {
       background: #f7b32b;
       border: none;
-      padding: 12px 28px;
-      font-size: 1rem;
+      padding: 10px 20px;
+      font-size: 0.9rem;
       font-weight: bold;
       border-radius: 40px;
       cursor: pointer;
       font-family: inherit;
-      transition: 0.08s linear;
-      box-shadow: 0 4px 0 0 #7a4a1a;
+      box-shadow: 0 3px 0 0 #7a4a1a;
       color: #2c1e0c;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
     }
     .room-btn:active {
       transform: translateY(2px);
@@ -96,102 +102,87 @@
     .room-input {
       background: #fff6e5;
       border: none;
-      padding: 10px 20px;
+      padding: 10px 16px;
       border-radius: 50px;
-      font-size: 1rem;
-      width: 180px;
+      font-size: 0.9rem;
+      width: 160px;
       outline: none;
-      font-family: monospace;
-      font-weight: bold;
       text-align: center;
     }
-    .room-input::placeholder {
-      color: #a57c42;
-    }
 
-    /* Bàn cờ cao cấp */
+    /* Bàn cờ - đã fix lỗi mobile */
     .board-container {
       background: #c7a45b;
-      border-radius: 36px;
-      padding: 16px;
-      box-shadow: inset 0 0 0 3px #fcf3cf, 0 12px 24px rgba(0,0,0,0.4);
+      border-radius: 24px;
+      padding: 12px;
+      box-shadow: inset 0 0 0 2px #fcf3cf, 0 8px 16px rgba(0,0,0,0.4);
     }
     .board-grid {
       display: grid;
-      grid-template-columns: repeat(15, minmax(0, 1fr));
+      grid-template-columns: repeat(15, 1fr);
       background-color: #faf0cf;
-      border-radius: 24px;
+      border-radius: 16px;
       overflow: hidden;
       aspect-ratio: 1 / 1;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
     .cell {
       aspect-ratio: 1 / 1;
       background: #faf0cf;
-      border: 1px solid #c49a6c;
+      border: 0.5px solid #c49a6c;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.7rem;
+      font-size: clamp(12px, 3.5vw, 20px);
       font-weight: bold;
       cursor: pointer;
-      transition: all 0.05s linear;
-      font-family: 'Segoe UI', system-ui;
-      text-shadow: 0 1px 1px white;
+      font-family: monospace;
     }
     .cell:active {
       background: #ecdcaa;
-      transform: scale(0.97);
+      transform: scale(0.96);
     }
-    /* Hiệu ứng quân cờ đẹp mắt */
     .cell[data-value="X"] {
       color: #e34d4d;
-      text-shadow: 0 0 2px #ffb3b3;
-      font-size: 1.9rem;
+      font-size: clamp(14px, 4vw, 22px);
     }
     .cell[data-value="O"] {
       color: #3b82f6;
-      text-shadow: 0 0 2px #b8d6ff;
-      font-size: 1.9rem;
+      font-size: clamp(14px, 4vw, 22px);
     }
 
-    /* Thông tin trận đấu */
     .info-panel {
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 15px;
-      margin-top: 22px;
-      margin-bottom: 12px;
+      gap: 12px;
+      margin-top: 18px;
     }
     .turn-card {
       background: #2c2419;
       border-radius: 60px;
-      padding: 6px 24px;
+      padding: 5px 18px;
       display: flex;
       align-items: center;
-      gap: 16px;
-      box-shadow: inset 0 1px 3px #ffecb3, 0 5px 12px rgba(0,0,0,0.3);
+      gap: 12px;
     }
     .piece-badge {
-      width: 48px;
-      height: 48px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       background: #e63946;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 32px;
+      font-size: 24px;
       font-weight: bold;
       color: white;
-      box-shadow: 0 2px 8px black;
     }
     .piece-badge.O-turn {
       background: #3b82f6;
     }
     .turn-text {
-      font-size: 1.3rem;
+      font-size: 1rem;
       font-weight: bold;
       color: #fbe9c3;
     }
@@ -199,39 +190,30 @@
       background: #00000066;
       backdrop-filter: blur(4px);
       border-radius: 40px;
-      padding: 6px 20px;
+      padding: 5px 16px;
       font-family: monospace;
       font-weight: bold;
       color: #ffdd99;
-      font-size: 1rem;
-      letter-spacing: 1px;
+      font-size: 0.8rem;
     }
     .status-message {
       background: #00000099;
       backdrop-filter: blur(12px);
       border-radius: 40px;
-      padding: 10px 20px;
+      padding: 8px 16px;
       text-align: center;
       font-weight: bold;
       color: #fff0c0;
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       margin-top: 12px;
-      border: 1px solid #ffde9e;
     }
-    @media (max-width: 680px) {
-      .game-wrapper { padding: 16px 18px 24px; }
-      .turn-text { font-size: 1rem; }
-      .piece-badge { width: 38px; height: 38px; font-size: 26px; }
-      .room-btn { padding: 8px 18px; font-size: 0.85rem; }
-      .cell { font-size: 1.2rem; }
-      .cell[data-value="X"] { font-size: 1.4rem; }
-      .cell[data-value="O"] { font-size: 1.4rem; }
-    }
-    button {
-      font-family: inherit;
-    }
-    .highlight-turn {
-      transition: 0.1s;
+
+    @media (max-width: 550px) {
+      .game-wrapper { padding: 14px; }
+      .room-btn { padding: 6px 14px; font-size: 0.75rem; }
+      .room-input { width: 130px; font-size: 0.75rem; }
+      .turn-text { font-size: 0.8rem; }
+      .piece-badge { width: 32px; height: 32px; font-size: 18px; }
     }
   </style>
 </head>
@@ -239,37 +221,39 @@
 
 <div class="game-wrapper">
   <div class="game-header">
-    <h1>⚡ CARO ONLINE ĐẲNG CẤP ⚡</h1>
-    <p>✨ Tạo phòng - Mời bạn bè - Đấu trí 15x15 ✨</p>
+    <h1>⚡ CARO ONLINE ⚡</h1>
+    <p>Tạo phòng - Mời bạn - Đấu trí 15x15</p>
   </div>
 
-  <!-- Phòng chờ sang trọng -->
+  <!-- Mã phòng hiển thị trên đầu -->
+  <div id="roomCodeTop" class="room-code-top">
+    🏠 Chưa có phòng
+  </div>
+
   <div class="room-panel">
-    <button class="room-btn" id="createRoomBtn">🎲 Tạo phòng mới</button>
-    <input type="text" id="roomIdInput" class="room-input" placeholder="🔑 Nhập mã phòng">
+    <button class="room-btn" id="createRoomBtn">🎲 Tạo phòng</button>
+    <input type="text" id="roomIdInput" class="room-input" placeholder="Nhập mã phòng">
     <button class="room-btn" id="joinRoomBtn">🚪 Vào phòng (O)</button>
   </div>
 
-  <!-- Bàn cờ -->
   <div class="board-container">
     <div id="board" class="board-grid"></div>
   </div>
 
-  <!-- Thông tin trận đấu -->
   <div class="info-panel">
-    <div class="turn-card" id="turnCard">
+    <div class="turn-card">
       <div class="piece-badge" id="pieceBadge">❌</div>
       <div class="turn-text" id="turnText">Chưa vào phòng</div>
     </div>
     <div class="room-code" id="roomCodeDisplay">🏠 Chưa có phòng</div>
   </div>
   <div class="status-message" id="statusMsg">
-    ✨ Tạo hoặc tham gia phòng để chơi cùng bạn bè ✨
+    ✨ Tạo hoặc tham gia phòng để chơi ✨
   </div>
 </div>
 
 <script>
-  // -------------------- FIREBASE CONFIG (GIỮ NGUYÊN CỦA BẠN) --------------------
+  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyB8d-H_rfEfJb5l-ArLjpeqPZHeh_9PD6k",
     authDomain: "caro-online-7c577.firebaseapp.com",
@@ -280,257 +264,204 @@
     measurementId: "G-2WFXESM4V9"
   };
 
-  // Khởi tạo Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  // Biến trạng thái
-  let room = "";           // mã phòng hiện tại
-  let player = "";         // "X" hoặc "O"
-  let currentBoardData = Array(225).fill("");  // lưu tạm để render
-  let currentTurn = "X";   // lượt hiện tại từ server
-  let isGameActive = true;  // nếu có người thắng thì không cho đánh nữa (ta tự quản)
-  let winDetected = false;
+  let room = "";
+  let player = "";
 
-  // DOM elements
   const boardContainer = document.getElementById("board");
-  const createRoomBtn = document.getElementById("createRoomBtn");
-  const joinRoomBtn = document.getElementById("joinRoomBtn");
   const roomIdInput = document.getElementById("roomIdInput");
+  const roomCodeTop = document.getElementById("roomCodeTop");
   const roomCodeDisplaySpan = document.getElementById("roomCodeDisplay");
   const turnTextSpan = document.getElementById("turnText");
   const pieceBadgeDiv = document.getElementById("pieceBadge");
   const statusMsgDiv = document.getElementById("statusMsg");
 
-  // Helper: Kiểm tra thắng trên mảng 1 chiều (15x15)
-  function checkWinnerOnArray(boardArray, lastMoveIndex, currentPlayer) {
-    if (!boardArray || lastMoveIndex === undefined) return false;
+  // Kiểm tra thắng 5 dòng
+  function checkWinner(boardArray, lastIdx, curPlayer) {
     const size = 15;
-    const row = Math.floor(lastMoveIndex / size);
-    const col = lastMoveIndex % size;
+    const row = Math.floor(lastIdx / size);
+    const col = lastIdx % size;
     
-    // Hàm đếm số lượng liên tiếp theo hướng
-    function countDirection(dx, dy) {
-      let count = 1;
-      // hướng +
+    function count(dx, dy) {
+      let cnt = 1;
       for (let step = 1; step <= 4; step++) {
         const nr = row + dx * step, nc = col + dy * step;
         if (nr < 0 || nr >= size || nc < 0 || nc >= size) break;
-        const idx = nr * size + nc;
-        if (boardArray[idx] === currentPlayer) count++;
+        if (boardArray[nr * size + nc] === curPlayer) cnt++;
         else break;
       }
-      // hướng -
       for (let step = 1; step <= 4; step++) {
         const nr = row - dx * step, nc = col - dy * step;
         if (nr < 0 || nr >= size || nc < 0 || nc >= size) break;
-        const idx = nr * size + nc;
-        if (boardArray[idx] === currentPlayer) count++;
+        if (boardArray[nr * size + nc] === curPlayer) cnt++;
         else break;
       }
-      return count;
+      return cnt;
     }
     
-    const directions = [[1,0],[0,1],[1,1],[1,-1]];
-    for (let [dx, dy] of directions) {
-      if (countDirection(dx, dy) >= 5) return true;
+    const dirs = [[1,0],[0,1],[1,1],[1,-1]];
+    for (let [dx, dy] of dirs) {
+      if (count(dx, dy) >= 5) return true;
     }
     return false;
   }
 
-  // Cập nhật giao diện bàn cờ từ dữ liệu (data là mảng 225 phần tử)
-  function renderBoardFromData(data) {
-    if (!boardContainer) return;
+  function renderBoard(data) {
     const cells = boardContainer.querySelectorAll(".cell");
     for (let i = 0; i < 225; i++) {
       const val = data[i] || "";
       if (cells[i]) {
         cells[i].innerText = val;
         cells[i].setAttribute("data-value", val);
-        // Style tùy chỉnh qua css đã có
       }
     }
   }
 
-  // Xây dựng bàn cờ lưới 15x15 (chỉ gọi 1 lần khi vào phòng)
-  function buildBoardGrid() {
+  function buildBoard() {
     boardContainer.innerHTML = "";
     for (let i = 0; i < 225; i++) {
       const cell = document.createElement("div");
       cell.className = "cell";
-      cell.setAttribute("data-index", i);
       cell.addEventListener("click", (function(idx) {
-        return function() { onCellClick(idx); };
+        return () => onCellClick(idx);
       })(i));
       boardContainer.appendChild(cell);
     }
   }
 
-  // Xử lý nước đi (giữ nguyên logic cũ nhưng thêm kiểm tra thắng local để thông báo)
   function onCellClick(index) {
     if (!room) {
-      statusMsgDiv.innerText = "⚠️ Hãy tạo hoặc tham gia phòng trước!";
+      statusMsgDiv.innerText = "⚠️ Hãy tạo hoặc tham gia phòng!";
       return;
     }
     if (!player) {
-      statusMsgDiv.innerText = "⚠️ Bạn chưa là người chơi (X hoặc O) trong phòng!";
+      statusMsgDiv.innerText = "⚠️ Bạn chưa tham gia với vai X hoặc O!";
       return;
     }
     
     const roomRef = db.ref(room);
-    roomRef.once("value", (snapshot) => {
-      const data = snapshot.val();
+    roomRef.once("value", (snap) => {
+      const data = snap.val();
       if (!data) {
-        statusMsgDiv.innerText = "❌ Phòng không tồn tại hoặc đã bị xóa!";
+        statusMsgDiv.innerText = "❌ Phòng không tồn tại!";
         return;
       }
       
-      const boardArray = data.board || Array(225).fill("");
-      const turn = data.turn; // "X" hoặc "O"
+      const boardArr = data.board || Array(225).fill("");
+      const turn = data.turn;
       
-      // Kiểm tra nếu có người thắng từ trước (nếu data có winner thì ngừng)
       if (data.winner && data.winner !== "") {
-        statusMsgDiv.innerText = `🏆 Trận đấu đã kết thúc! Người thắng: ${data.winner}. Hãy tạo phòng mới.`;
+        statusMsgDiv.innerText = `🏆 Trận đã kết thúc! ${data.winner} thắng.`;
         return;
       }
       
-      // Kiểm tra ô trống và đúng lượt
-      if (boardArray[index] !== "") {
-        statusMsgDiv.innerText = "❌ Ô này đã được đánh!";
+      if (boardArr[index] !== "") {
+        statusMsgDiv.innerText = "❌ Ô này đã có quân!";
         return;
       }
       if (turn !== player) {
-        statusMsgDiv.innerText = `⏳ Chưa tới lượt bạn! Lượt hiện tại: ${turn}`;
+        statusMsgDiv.innerText = `⏳ Lượt của ${turn}, chưa tới bạn!`;
         return;
       }
       
-      // Thực hiện nước đi
-      boardArray[index] = player;
+      boardArr[index] = player;
       const newTurn = player === "X" ? "O" : "X";
+      const isWin = checkWinner(boardArr, index, player);
       
-      // Kiểm tra thắng cục bộ (dùng checkWinner)
-      const isWin = checkWinnerOnArray(boardArray, index, player);
-      
-      const updateData = {
-        board: boardArray,
-        turn: newTurn
-      };
-      
+      const updateData = { board: boardArr, turn: newTurn };
       if (isWin) {
         updateData.winner = player;
         updateData.gameOver = true;
-        statusMsgDiv.innerText = `🎉🎉 CHIẾN THẮNG! Người chơi ${player} đã thắng ván này! 🎉🎉`;
+        statusMsgDiv.innerText = `🎉 CHIẾN THẮNG! ${player} thắng cuộc! 🎉`;
       }
       
-      // Cập nhật lên Firebase
       roomRef.update(updateData).then(() => {
-        if (!isWin) {
-          statusMsgDiv.innerText = `✅ Đã đánh! Lượt tiếp theo: ${newTurn}`;
-        } else {
-          statusMsgDiv.innerText = `🏆 Thắng lợi rực rỡ! Tạo phòng mới để chơi tiếp.`;
-        }
-      }).catch(err => {
-        console.error(err);
-        statusMsgDiv.innerText = "Lỗi kết nối! Thử lại.";
-      });
+        if (!isWin) statusMsgDiv.innerText = `✅ Đã đánh! Lượt: ${newTurn}`;
+      }).catch(() => statusMsgDiv.innerText = "Lỗi kết nối!");
     });
   }
 
-  // Cập nhật toàn bộ giao diện từ snapshot Firebase
-  function subscribeToRoom() {
+  function subscribeRoom() {
     if (!room) return;
     const roomRef = db.ref(room);
-    roomRef.off(); // tắt listener cũ tránh trùng
-    roomRef.on("value", (snapshot) => {
-      const data = snapshot.val();
+    roomRef.off();
+    roomRef.on("value", (snap) => {
+      const data = snap.val();
       if (!data) {
-        // Phòng bị xóa hoặc chưa có
-        if (room) {
-          statusMsgDiv.innerText = "⚠️ Phòng đã đóng hoặc không tồn tại. Hãy tạo phòng mới.";
-          resetRoomUI();
-        }
+        if (room) statusMsgDiv.innerText = "⚠️ Phòng đã đóng!";
+        resetUI();
         return;
       }
       
-      // Lấy dữ liệu
-      const boardArray = data.board || Array(225).fill("");
+      const boardArr = data.board || Array(225).fill("");
       const turn = data.turn || "X";
-      const winner = data.winner || null;
+      const winner = data.winner;
       
-      currentBoardData = [...boardArray];
-      currentTurn = turn;
+      renderBoard(boardArr);
       
-      // Render bàn cờ
-      renderBoardFromData(boardArray);
+      // Cập nhật mã phòng trên đầu
+      roomCodeTop.innerHTML = `🔑 MÃ PHÒNG: <strong style="font-size:1.2rem;">${room}</strong> 🔑<span>⭐ Gửi mã này cho bạn để cùng chơi ⭐</span>`;
+      roomCodeTop.style.background = "linear-gradient(135deg, #2ecc71, #27ae60)";
+      roomCodeTop.style.color = "white";
+      roomCodeDisplaySpan.innerHTML = `🔑 Mã: ${room}`;
       
-      // Cập nhật giao diện lượt và trạng thái
       if (winner && winner !== "") {
-        // trận đã kết thúc
         turnTextSpan.innerText = winner === "X" ? "❌ X THẮNG" : "⭕ O THẮNG";
         pieceBadgeDiv.innerText = winner === "X" ? "❌" : "⭕";
         pieceBadgeDiv.style.background = winner === "X" ? "#e63946" : "#3b82f6";
-        statusMsgDiv.innerHTML = `🏆 KẾT THÚC! Người thắng: ${winner}. Hãy tạo phòng mới để chơi tiếp. 🏆`;
-        if (player) {
-          // Nếu có người thắng, không cho phép đánh nữa (nhưng vẫn cho tạo phòng mới)
-        }
+        statusMsgDiv.innerHTML = `🏆 KẾT THÚC! ${winner} thắng. Tạo phòng mới để chơi tiếp. 🏆`;
         return;
       }
       
-      // Nếu chưa có winner, cập nhật lượt bình thường
       if (player === "X" || player === "O") {
         if (turn === player) {
           turnTextSpan.innerText = `Lượt của bạn (${player})`;
           pieceBadgeDiv.innerText = player;
           pieceBadgeDiv.style.background = player === "X" ? "#e63946" : "#3b82f6";
-          statusMsgDiv.innerHTML = `✨ Đến lượt bạn (${player}). Hãy đặt quân cờ! ✨`;
+          statusMsgDiv.innerHTML = `✨ Lượt của bạn (${player})! Hãy đặt quân ✨`;
         } else {
-          const opponent = player === "X" ? "O" : "X";
-          turnTextSpan.innerText = `Lượt: ${opponent}`;
-          pieceBadgeDiv.innerText = opponent;
-          pieceBadgeDiv.style.background = opponent === "X" ? "#e63946" : "#3b82f6";
-          statusMsgDiv.innerHTML = `⏳ Đợi đối thủ (${opponent}) đánh... Hãy kiên nhẫn!`;
+          const opp = player === "X" ? "O" : "X";
+          turnTextSpan.innerText = `Lượt: ${opp}`;
+          pieceBadgeDiv.innerText = opp;
+          pieceBadgeDiv.style.background = opp === "X" ? "#e63946" : "#3b82f6";
+          statusMsgDiv.innerHTML = `⏳ Đợi đối thủ (${opp}) đánh...`;
         }
       } else {
         turnTextSpan.innerText = "Chưa tham gia";
         pieceBadgeDiv.innerText = "?";
         pieceBadgeDiv.style.background = "#aa8c54";
       }
-      
-      // Cập nhật mã phòng hiển thị
-      roomCodeDisplaySpan.innerHTML = `🔑 Mã phòng: ${room}`;
     });
   }
-  
-  // Reset UI khi rời phòng
-  function resetRoomUI() {
+
+  function resetUI() {
     room = "";
     player = "";
-    currentBoardData = Array(225).fill("");
-    currentTurn = "X";
-    if (boardContainer) {
-      // Xóa hết nội dung bàn cờ
-      const cells = boardContainer.querySelectorAll(".cell");
-      if (cells.length) {
-        cells.forEach(cell => {
-          cell.innerText = "";
-          cell.setAttribute("data-value", "");
-        });
-      }
-    }
+    const cells = boardContainer.querySelectorAll(".cell");
+    cells.forEach(cell => {
+      cell.innerText = "";
+      cell.setAttribute("data-value", "");
+    });
     turnTextSpan.innerText = "Chưa vào phòng";
     pieceBadgeDiv.innerText = "🎮";
     pieceBadgeDiv.style.background = "#aa8c54";
     roomCodeDisplaySpan.innerHTML = "🏠 Chưa có phòng";
+    roomCodeTop.innerHTML = "🏠 Chưa có phòng";
+    roomCodeTop.style.background = "linear-gradient(135deg, #f7b32b, #e69500)";
+    roomCodeTop.style.color = "#2c1e0c";
     statusMsgDiv.innerHTML = "✨ Tạo hoặc tham gia phòng để chơi cùng bạn bè ✨";
   }
-  
-  // Tạo phòng mới (giữ nguyên logic cơ bản nhưng giao diện đẹp)
-  function createNewRoom() {
-    const newRoomId = "room_" + Math.floor(Math.random() * 100000);
-    room = newRoomId;
+
+  function createRoom() {
+    if (room) {
+      db.ref(room).off();
+    }
+    const newRoom = "room_" + Math.floor(Math.random() * 100000);
+    room = newRoom;
     player = "X";
     
-    // Khởi tạo data trên firebase
     const initialBoard = Array(225).fill("");
     db.ref(room).set({
       board: initialBoard,
@@ -538,93 +469,74 @@
       winner: null,
       gameOver: false
     }).then(() => {
-      // Xây dựng bàn cờ lần đầu
-      buildBoardGrid();
-      subscribeToRoom();
-      statusMsgDiv.innerHTML = `🎲 Đã tạo phòng: ${room}. Chia sẻ mã này để bạn bè vào (vai O). Bạn là X!`;
-      // focus
-    }).catch(err => {
-      console.error(err);
-      statusMsgDiv.innerHTML = "Lỗi tạo phòng, thử lại!";
+      buildBoard();
+      subscribeRoom();
+      statusMsgDiv.innerHTML = `🎲 Đã tạo phòng: ${room}. Bạn là X. Mời bạn bè nhập mã này!`;
+    }).catch(() => {
+      statusMsgDiv.innerHTML = "Lỗi tạo phòng!";
       room = "";
       player = "";
     });
   }
-  
-  // Tham gia phòng với vai O
-  function joinExistingRoom() {
+
+  function joinRoom() {
     const roomCode = roomIdInput.value.trim();
     if (!roomCode) {
-      statusMsgDiv.innerHTML = "⚠️ Nhập mã phòng trước khi tham gia!";
+      statusMsgDiv.innerHTML = "⚠️ Nhập mã phòng!";
       return;
     }
+    
     const roomRef = db.ref(roomCode);
-    roomRef.once("value", (snapshot) => {
-      const data = snapshot.val();
+    roomRef.once("value", (snap) => {
+      const data = snap.val();
       if (!data) {
-        statusMsgDiv.innerHTML = "❌ Phòng không tồn tại! Hãy kiểm tra lại mã.";
+        statusMsgDiv.innerHTML = "❌ Phòng không tồn tại!";
         return;
       }
-      // Nếu đã có người thắng hoặc game over?
       if (data.winner && data.winner !== "") {
-        statusMsgDiv.innerHTML = `⚠️ Phòng này đã kết thúc (${data.winner} thắng). Hãy tạo phòng mới.`;
+        statusMsgDiv.innerHTML = `⚠️ Phòng đã kết thúc (${data.winner} thắng).`;
         return;
       }
-      // Kiểm tra nếu đã có đủ 2 người? Nhưng cơ chế đơn giản, O có thể join
-      // Nếu đã có người chơi O trong data? (chưa lưu nhưng không quan trọng, vẫn cho join với vai O)
+      
+      if (room) db.ref(room).off();
       room = roomCode;
       player = "O";
-      buildBoardGrid();
-      subscribeToRoom();
-      statusMsgDiv.innerHTML = `✅ Đã tham gia phòng ${room} với vai O. Chờ đối thủ (X) hoặc bắt đầu!`;
-    }).catch(err => {
-      statusMsgDiv.innerHTML = "Lỗi kết nối!";
-    });
+      buildBoard();
+      subscribeRoom();
+      statusMsgDiv.innerHTML = `✅ Đã vào phòng ${room} với vai O. Chờ đối thủ (X) hoặc bắt đầu!`;
+    }).catch(() => statusMsgDiv.innerHTML = "Lỗi kết nối!");
   }
+
+  document.getElementById("createRoomBtn").onclick = () => {
+    if (room) db.ref(room).off();
+    resetUI();
+    createRoom();
+  };
   
-  // Reset toàn bộ giao diện khi muốn rời phòng (không rời tự động, nhưng khi tạo mới sẽ reset)
-  function leaveAndReset() {
-    if (room) {
-      // không xóa data trên firebase, chỉ hủy theo dõi
-      db.ref(room).off();
-    }
-    resetRoomUI();
-  }
-  
-  // Sự kiện nút bấm (nâng cấp giao diện, giữ nguyên core)
-  createRoomBtn.addEventListener("click", () => {
-    leaveAndReset();
-    createNewRoom();
-  });
-  
-  joinRoomBtn.addEventListener("click", () => {
-    if (room) {
-      // Nếu đang ở phòng cũ, hủy theo dõi trước
-      db.ref(room).off();
-    }
-    resetRoomUI();
-    joinExistingRoom();
-  });
-  
-  // Khởi tạo bàn cờ trống lúc đầu (chưa có phòng)
-  function initEmptyBoard() {
+  document.getElementById("joinRoomBtn").onclick = () => {
+    if (room) db.ref(room).off();
+    resetUI();
+    joinRoom();
+  };
+
+  // Khởi tạo bàn cờ trống
+  function init() {
     boardContainer.innerHTML = "";
     for (let i = 0; i < 225; i++) {
       const cell = document.createElement("div");
       cell.className = "cell";
-      cell.setAttribute("data-index", i);
       cell.addEventListener("click", (function(idx) {
-        return function() { 
+        return () => {
           if (!room) statusMsgDiv.innerText = "Hãy tạo hoặc tham gia phòng trước!";
           else onCellClick(idx);
         };
       })(i));
       boardContainer.appendChild(cell);
     }
-    resetRoomUI();
+    resetUI();
   }
   
-  initEmptyBoard();
+  init();
 </script>
 </body>
 </html>

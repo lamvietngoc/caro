@@ -17,16 +17,17 @@ let room = "";
 let player = "";
 
 function createRoom() {
-  room = "Math.floor(Math.random() * 10000);
+  room = Math.floor(Math.random() * 10000);
   player = "X";
-  alert("Mã phòng: " + room);
 
   db.ref(room).set({
     board: Array(225).fill(""),
     turn: "X"
+  }).then(() => {
+    startGame();
   });
 
-  startGame();
+  alert("Mã phòng: " + room);
 }
 
 function joinRoom() {

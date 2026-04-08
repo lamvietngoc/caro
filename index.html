@@ -1,590 +1,630 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Caro Đỉnh Cao - Giao Diện Sang Trọng</title>
-    <style>
-        * {
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Caro Online Đẳng Cấp - Chơi Cùng Bạn Bè</title>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        body {
-            background: linear-gradient(145deg, #1a472a 0%, #0a2a1a 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Segoe UI', 'Poppins', 'Quicksand', system-ui, -apple-system, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f2b1d 0%, #1a3f2a 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', 'Poppins', 'Quicksand', system-ui, -apple-system, sans-serif;
+      padding: 20px;
+    }
 
-        /* Container chính */
-        .game-container {
-            max-width: 850px;
-            width: 100%;
-            background: rgba(30, 20, 12, 0.65);
-            backdrop-filter: blur(4px);
-            border-radius: 64px;
-            padding: 20px 24px 28px;
-            box-shadow: 0 30px 40px rgba(0,0,0,0.5), inset 0 1px 3px rgba(255,245,200,0.5);
-            border: 1px solid #e9cf8e;
-            transition: all 0.2s;
-        }
+    /* Container chính - hiệu ứng thủy tinh */
+    .game-wrapper {
+      max-width: 900px;
+      width: 100%;
+      background: rgba(30, 25, 18, 0.55);
+      backdrop-filter: blur(8px);
+      border-radius: 64px;
+      padding: 24px 28px 32px;
+      box-shadow: 0 25px 45px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,250,210,0.4);
+      border: 1px solid rgba(255,215,130,0.6);
+      transition: all 0.3s ease;
+    }
 
-        /* Header đẹp */
-        .game-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .game-header h1 {
-            margin: 0;
-            font-size: 2.2rem;
-            background: linear-gradient(135deg, #FFE6B0, #FFB347);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            letter-spacing: 2px;
-        }
-        .game-header p {
-            color: #f7e5b5;
-            margin: 5px 0 0;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
+    /* Header */
+    .game-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .game-header h1 {
+      font-size: 2.2rem;
+      background: linear-gradient(135deg, #FFE6B0, #FFB347, #FF8C42);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      letter-spacing: 2px;
+    }
+    .game-header p {
+      color: #f7e5b5;
+      font-size: 0.9rem;
+      margin-top: 6px;
+      font-weight: 500;
+    }
 
-        /* Khu vực bàn cờ nâng cấp */
-        .board-wrapper {
-            background: #c7a45b;
-            border-radius: 40px;
-            padding: 18px;
-            box-shadow: inset 0 0 0 3px #fcf3cf, 0 15px 25px rgba(0,0,0,0.3);
-        }
-        canvas {
-            display: block;
-            margin: 0 auto;
-            border-radius: 28px;
-            box-shadow: 0 8px 18px rgba(0,0,0,0.4);
-            cursor: pointer;
-            width: 100%;
-            height: auto;
-            background-color: #faf0cf;
-        }
+    /* Phòng chờ - nâng cấp */
+    .room-panel {
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(4px);
+      border-radius: 60px;
+      padding: 12px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      border: 1px solid #e7bc7e;
+    }
+    .room-btn {
+      background: #f7b32b;
+      border: none;
+      padding: 12px 28px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 40px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: 0.08s linear;
+      box-shadow: 0 4px 0 0 #7a4a1a;
+      color: #2c1e0c;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .room-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 0 #7a4a1a;
+    }
+    .room-input {
+      background: #fff6e5;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-size: 1rem;
+      width: 180px;
+      outline: none;
+      font-family: monospace;
+      font-weight: bold;
+      text-align: center;
+    }
+    .room-input::placeholder {
+      color: #a57c42;
+    }
 
-        /* Thanh thông tin cao cấp */
-        .info-panel {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 14px;
-            margin-top: 20px;
-            margin-bottom: 12px;
-        }
+    /* Bàn cờ cao cấp */
+    .board-container {
+      background: #c7a45b;
+      border-radius: 36px;
+      padding: 16px;
+      box-shadow: inset 0 0 0 3px #fcf3cf, 0 12px 24px rgba(0,0,0,0.4);
+    }
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(15, minmax(0, 1fr));
+      background-color: #faf0cf;
+      border-radius: 24px;
+      overflow: hidden;
+      aspect-ratio: 1 / 1;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .cell {
+      aspect-ratio: 1 / 1;
+      background: #faf0cf;
+      border: 1px solid #c49a6c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.7rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.05s linear;
+      font-family: 'Segoe UI', system-ui;
+      text-shadow: 0 1px 1px white;
+    }
+    .cell:active {
+      background: #ecdcaa;
+      transform: scale(0.97);
+    }
+    /* Hiệu ứng quân cờ đẹp mắt */
+    .cell[data-value="X"] {
+      color: #e34d4d;
+      text-shadow: 0 0 2px #ffb3b3;
+      font-size: 1.9rem;
+    }
+    .cell[data-value="O"] {
+      color: #3b82f6;
+      text-shadow: 0 0 2px #b8d6ff;
+      font-size: 1.9rem;
+    }
 
-        .turn-card {
-            background: #2c2419;
-            border-radius: 60px;
-            padding: 6px 24px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            box-shadow: inset 0 1px 3px #ffecb3, 0 5px 10px rgba(0,0,0,0.3);
-        }
-        .piece-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: #e63946;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 28px;
-            color: white;
-            box-shadow: 0 2px 8px black;
-        }
-        .piece-icon.O-turn {
-            background: #3b82f6;
-        }
-        .turn-text {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #fbe9c3;
-            letter-spacing: 1px;
-        }
-
-        .score-glass {
-            background: rgba(0,0,0,0.55);
-            backdrop-filter: blur(8px);
-            border-radius: 48px;
-            padding: 6px 24px;
-            display: flex;
-            gap: 28px;
-            font-weight: bold;
-            border: 1px solid #fad37b;
-        }
-        .score-item {
-            font-size: 1.2rem;
-            color: #ffe6b3;
-        }
-        .score-item span {
-            font-size: 2rem;
-            margin-left: 8px;
-            color: #ffcd7e;
-            font-weight: 800;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 12px;
-        }
-        .btn {
-            border: none;
-            background: #f7b32b;
-            padding: 8px 20px;
-            font-weight: bold;
-            font-size: 1rem;
-            border-radius: 40px;
-            font-family: inherit;
-            cursor: pointer;
-            transition: 0.08s linear;
-            box-shadow: 0 4px 0 0 #7a4a1a;
-            color: #2c1e0c;
-        }
-        .btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 1px 0 0 #7a4a1a;
-        }
-        .btn-secondary {
-            background: #bc8f4b;
-            box-shadow: 0 4px 0 0 #61401a;
-            color: #fff2df;
-        }
-
-        .status-message {
-            background: #00000099;
-            backdrop-filter: blur(12px);
-            border-radius: 36px;
-            padding: 10px 18px;
-            text-align: center;
-            font-weight: bold;
-            color: #fff0c0;
-            font-size: 1rem;
-            margin-top: 14px;
-            border: 1px solid #ffde9e;
-        }
-
-        @media (max-width: 620px) {
-            .game-container { padding: 14px 16px 20px; }
-            .turn-text { font-size: 1rem; }
-            .piece-icon { width: 34px; height: 34px; font-size: 22px; }
-            .score-item { font-size: 0.9rem; }
-            .score-item span { font-size: 1.5rem; }
-            .btn { padding: 5px 14px; font-size: 0.85rem; }
-        }
-    </style>
+    /* Thông tin trận đấu */
+    .info-panel {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 22px;
+      margin-bottom: 12px;
+    }
+    .turn-card {
+      background: #2c2419;
+      border-radius: 60px;
+      padding: 6px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: inset 0 1px 3px #ffecb3, 0 5px 12px rgba(0,0,0,0.3);
+    }
+    .piece-badge {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #e63946;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: bold;
+      color: white;
+      box-shadow: 0 2px 8px black;
+    }
+    .piece-badge.O-turn {
+      background: #3b82f6;
+    }
+    .turn-text {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #fbe9c3;
+    }
+    .room-code {
+      background: #00000066;
+      backdrop-filter: blur(4px);
+      border-radius: 40px;
+      padding: 6px 20px;
+      font-family: monospace;
+      font-weight: bold;
+      color: #ffdd99;
+      font-size: 1rem;
+      letter-spacing: 1px;
+    }
+    .status-message {
+      background: #00000099;
+      backdrop-filter: blur(12px);
+      border-radius: 40px;
+      padding: 10px 20px;
+      text-align: center;
+      font-weight: bold;
+      color: #fff0c0;
+      font-size: 0.95rem;
+      margin-top: 12px;
+      border: 1px solid #ffde9e;
+    }
+    @media (max-width: 680px) {
+      .game-wrapper { padding: 16px 18px 24px; }
+      .turn-text { font-size: 1rem; }
+      .piece-badge { width: 38px; height: 38px; font-size: 26px; }
+      .room-btn { padding: 8px 18px; font-size: 0.85rem; }
+      .cell { font-size: 1.2rem; }
+      .cell[data-value="X"] { font-size: 1.4rem; }
+      .cell[data-value="O"] { font-size: 1.4rem; }
+    }
+    button {
+      font-family: inherit;
+    }
+    .highlight-turn {
+      transition: 0.1s;
+    }
+  </style>
 </head>
 <body>
-<div class="game-container">
-    <div class="game-header">
-        <h1>⚡ CARO KINH ĐIỂN ⚡</h1>
-        <p>✨ 15x15 · 5 quân thắng · Giao diện cao cấp ✨</p>
-    </div>
 
-    <div class="board-wrapper">
-        <canvas id="caroCanvas" width="660" height="660" style="width:100%; height:auto; max-width:660px; aspect-ratio:1/1"></canvas>
-    </div>
+<div class="game-wrapper">
+  <div class="game-header">
+    <h1>⚡ CARO ONLINE ĐẲNG CẤP ⚡</h1>
+    <p>✨ Tạo phòng - Mời bạn bè - Đấu trí 15x15 ✨</p>
+  </div>
 
-    <div class="info-panel">
-        <div class="turn-card" id="turnCard">
-            <div class="piece-icon" id="pieceIcon">❌</div>
-            <div class="turn-text" id="turnText">Lượt: X</div>
-        </div>
-        <div class="score-glass">
-            <div class="score-item">❌ X <span id="scoreX">0</span></div>
-            <div class="score-item">⭕ O <span id="scoreO">0</span></div>
-        </div>
-        <div class="btn-group">
-            <button class="btn" id="resetGameBtn">🔄 Ván mới</button>
-            <button class="btn btn-secondary" id="fullResetBtn">🏆 Reset điểm</button>
-        </div>
+  <!-- Phòng chờ sang trọng -->
+  <div class="room-panel">
+    <button class="room-btn" id="createRoomBtn">🎲 Tạo phòng mới</button>
+    <input type="text" id="roomIdInput" class="room-input" placeholder="🔑 Nhập mã phòng">
+    <button class="room-btn" id="joinRoomBtn">🚪 Vào phòng (O)</button>
+  </div>
+
+  <!-- Bàn cờ -->
+  <div class="board-container">
+    <div id="board" class="board-grid"></div>
+  </div>
+
+  <!-- Thông tin trận đấu -->
+  <div class="info-panel">
+    <div class="turn-card" id="turnCard">
+      <div class="piece-badge" id="pieceBadge">❌</div>
+      <div class="turn-text" id="turnText">Chưa vào phòng</div>
     </div>
-    <div class="status-message" id="statusMsg">
-        ✨ Lượt của X — hãy đặt quân cờ ✨
-    </div>
+    <div class="room-code" id="roomCodeDisplay">🏠 Chưa có phòng</div>
+  </div>
+  <div class="status-message" id="statusMsg">
+    ✨ Tạo hoặc tham gia phòng để chơi cùng bạn bè ✨
+  </div>
 </div>
 
 <script>
-    (function(){
-        // ---------- CẤU HÌNH CARO 15x15 ----------
-        const BOARD_SIZE = 15;
-        let board = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null)); // 'X' or 'O'
-        let currentTurn = 'X';
-        let gameActive = true;
-        let winner = null;
-        let isDraw = false;
-        
-        // Điểm số
-        let scoreX = 0;
-        let scoreO = 0;
-        
-        // Canvas elements
-        const canvas = document.getElementById('caroCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        // Kích thước cell và offset
-        let cellSize = 0;
-        let offsetX = 0, offsetY = 0;
-        
-        // ========== CÁC HÀM TIỆN ÍCH ==========
-        function calcDimensions() {
-            const size = canvas.width; // 660px
-            const margin = 34;
-            const available = size - margin * 2;
-            cellSize = available / (BOARD_SIZE - 1);
-            offsetX = margin;
-            offsetY = margin;
+  // -------------------- FIREBASE CONFIG (GIỮ NGUYÊN CỦA BẠN) --------------------
+  const firebaseConfig = {
+    apiKey: "AIzaSyB8d-H_rfEfJb5l-ArLjpeqPZHeh_9PD6k",
+    authDomain: "caro-online-7c577.firebaseapp.com",
+    projectId: "caro-online-7c577",
+    storageBucket: "caro-online-7c577.firebasestorage.app",
+    messagingSenderId: "587741989273",
+    appId: "1:587741989273:web:df8141888d9e904a002b08",
+    measurementId: "G-2WFXESM4V9"
+  };
+
+  // Khởi tạo Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // Biến trạng thái
+  let room = "";           // mã phòng hiện tại
+  let player = "";         // "X" hoặc "O"
+  let currentBoardData = Array(225).fill("");  // lưu tạm để render
+  let currentTurn = "X";   // lượt hiện tại từ server
+  let isGameActive = true;  // nếu có người thắng thì không cho đánh nữa (ta tự quản)
+  let winDetected = false;
+
+  // DOM elements
+  const boardContainer = document.getElementById("board");
+  const createRoomBtn = document.getElementById("createRoomBtn");
+  const joinRoomBtn = document.getElementById("joinRoomBtn");
+  const roomIdInput = document.getElementById("roomIdInput");
+  const roomCodeDisplaySpan = document.getElementById("roomCodeDisplay");
+  const turnTextSpan = document.getElementById("turnText");
+  const pieceBadgeDiv = document.getElementById("pieceBadge");
+  const statusMsgDiv = document.getElementById("statusMsg");
+
+  // Helper: Kiểm tra thắng trên mảng 1 chiều (15x15)
+  function checkWinnerOnArray(boardArray, lastMoveIndex, currentPlayer) {
+    if (!boardArray || lastMoveIndex === undefined) return false;
+    const size = 15;
+    const row = Math.floor(lastMoveIndex / size);
+    const col = lastMoveIndex % size;
+    
+    // Hàm đếm số lượng liên tiếp theo hướng
+    function countDirection(dx, dy) {
+      let count = 1;
+      // hướng +
+      for (let step = 1; step <= 4; step++) {
+        const nr = row + dx * step, nc = col + dy * step;
+        if (nr < 0 || nr >= size || nc < 0 || nc >= size) break;
+        const idx = nr * size + nc;
+        if (boardArray[idx] === currentPlayer) count++;
+        else break;
+      }
+      // hướng -
+      for (let step = 1; step <= 4; step++) {
+        const nr = row - dx * step, nc = col - dy * step;
+        if (nr < 0 || nr >= size || nc < 0 || nc >= size) break;
+        const idx = nr * size + nc;
+        if (boardArray[idx] === currentPlayer) count++;
+        else break;
+      }
+      return count;
+    }
+    
+    const directions = [[1,0],[0,1],[1,1],[1,-1]];
+    for (let [dx, dy] of directions) {
+      if (countDirection(dx, dy) >= 5) return true;
+    }
+    return false;
+  }
+
+  // Cập nhật giao diện bàn cờ từ dữ liệu (data là mảng 225 phần tử)
+  function renderBoardFromData(data) {
+    if (!boardContainer) return;
+    const cells = boardContainer.querySelectorAll(".cell");
+    for (let i = 0; i < 225; i++) {
+      const val = data[i] || "";
+      if (cells[i]) {
+        cells[i].innerText = val;
+        cells[i].setAttribute("data-value", val);
+        // Style tùy chỉnh qua css đã có
+      }
+    }
+  }
+
+  // Xây dựng bàn cờ lưới 15x15 (chỉ gọi 1 lần khi vào phòng)
+  function buildBoardGrid() {
+    boardContainer.innerHTML = "";
+    for (let i = 0; i < 225; i++) {
+      const cell = document.createElement("div");
+      cell.className = "cell";
+      cell.setAttribute("data-index", i);
+      cell.addEventListener("click", (function(idx) {
+        return function() { onCellClick(idx); };
+      })(i));
+      boardContainer.appendChild(cell);
+    }
+  }
+
+  // Xử lý nước đi (giữ nguyên logic cũ nhưng thêm kiểm tra thắng local để thông báo)
+  function onCellClick(index) {
+    if (!room) {
+      statusMsgDiv.innerText = "⚠️ Hãy tạo hoặc tham gia phòng trước!";
+      return;
+    }
+    if (!player) {
+      statusMsgDiv.innerText = "⚠️ Bạn chưa là người chơi (X hoặc O) trong phòng!";
+      return;
+    }
+    
+    const roomRef = db.ref(room);
+    roomRef.once("value", (snapshot) => {
+      const data = snapshot.val();
+      if (!data) {
+        statusMsgDiv.innerText = "❌ Phòng không tồn tại hoặc đã bị xóa!";
+        return;
+      }
+      
+      const boardArray = data.board || Array(225).fill("");
+      const turn = data.turn; // "X" hoặc "O"
+      
+      // Kiểm tra nếu có người thắng từ trước (nếu data có winner thì ngừng)
+      if (data.winner && data.winner !== "") {
+        statusMsgDiv.innerText = `🏆 Trận đấu đã kết thúc! Người thắng: ${data.winner}. Hãy tạo phòng mới.`;
+        return;
+      }
+      
+      // Kiểm tra ô trống và đúng lượt
+      if (boardArray[index] !== "") {
+        statusMsgDiv.innerText = "❌ Ô này đã được đánh!";
+        return;
+      }
+      if (turn !== player) {
+        statusMsgDiv.innerText = `⏳ Chưa tới lượt bạn! Lượt hiện tại: ${turn}`;
+        return;
+      }
+      
+      // Thực hiện nước đi
+      boardArray[index] = player;
+      const newTurn = player === "X" ? "O" : "X";
+      
+      // Kiểm tra thắng cục bộ (dùng checkWinner)
+      const isWin = checkWinnerOnArray(boardArray, index, player);
+      
+      const updateData = {
+        board: boardArray,
+        turn: newTurn
+      };
+      
+      if (isWin) {
+        updateData.winner = player;
+        updateData.gameOver = true;
+        statusMsgDiv.innerText = `🎉🎉 CHIẾN THẮNG! Người chơi ${player} đã thắng ván này! 🎉🎉`;
+      }
+      
+      // Cập nhật lên Firebase
+      roomRef.update(updateData).then(() => {
+        if (!isWin) {
+          statusMsgDiv.innerText = `✅ Đã đánh! Lượt tiếp theo: ${newTurn}`;
+        } else {
+          statusMsgDiv.innerText = `🏆 Thắng lợi rực rỡ! Tạo phòng mới để chơi tiếp.`;
         }
-        
-        // Cập nhật UI điểm
-        function updateScoreUI() {
-            document.getElementById('scoreX').innerText = scoreX;
-            document.getElementById('scoreO').innerText = scoreO;
+      }).catch(err => {
+        console.error(err);
+        statusMsgDiv.innerText = "Lỗi kết nối! Thử lại.";
+      });
+    });
+  }
+
+  // Cập nhật toàn bộ giao diện từ snapshot Firebase
+  function subscribeToRoom() {
+    if (!room) return;
+    const roomRef = db.ref(room);
+    roomRef.off(); // tắt listener cũ tránh trùng
+    roomRef.on("value", (snapshot) => {
+      const data = snapshot.val();
+      if (!data) {
+        // Phòng bị xóa hoặc chưa có
+        if (room) {
+          statusMsgDiv.innerText = "⚠️ Phòng đã đóng hoặc không tồn tại. Hãy tạo phòng mới.";
+          resetRoomUI();
         }
-        
-        // Cập nhật giao diện lượt chơi & trạng thái
-        function updateTurnUI() {
-            const turnTextDiv = document.getElementById('turnText');
-            const pieceIconDiv = document.getElementById('pieceIcon');
-            if(!gameActive) {
-                if(winner === 'X') {
-                    turnTextDiv.innerText = '🏆 X THẮNG!';
-                    pieceIconDiv.innerText = '❌';
-                    pieceIconDiv.style.background = '#e63946';
-                } else if(winner === 'O') {
-                    turnTextDiv.innerText = '🏆 O THẮNG!';
-                    pieceIconDiv.innerText = '⭕';
-                    pieceIconDiv.style.background = '#3b82f6';
-                } else if(isDraw) {
-                    turnTextDiv.innerText = '🤝 HÒA CỜ';
-                    pieceIconDiv.innerText = '🤝';
-                    pieceIconDiv.style.background = '#aa8c54';
-                } else {
-                    turnTextDiv.innerText = currentTurn === 'X' ? 'Lượt: X' : 'Lượt: O';
-                    pieceIconDiv.innerText = currentTurn === 'X' ? '❌' : '⭕';
-                    pieceIconDiv.style.background = currentTurn === 'X' ? '#e63946' : '#3b82f6';
-                }
-                return;
-            }
-            turnTextDiv.innerText = currentTurn === 'X' ? 'Lượt: X' : 'Lượt: O';
-            pieceIconDiv.innerText = currentTurn === 'X' ? '❌' : '⭕';
-            pieceIconDiv.style.background = currentTurn === 'X' ? '#e63946' : '#3b82f6';
+        return;
+      }
+      
+      // Lấy dữ liệu
+      const boardArray = data.board || Array(225).fill("");
+      const turn = data.turn || "X";
+      const winner = data.winner || null;
+      
+      currentBoardData = [...boardArray];
+      currentTurn = turn;
+      
+      // Render bàn cờ
+      renderBoardFromData(boardArray);
+      
+      // Cập nhật giao diện lượt và trạng thái
+      if (winner && winner !== "") {
+        // trận đã kết thúc
+        turnTextSpan.innerText = winner === "X" ? "❌ X THẮNG" : "⭕ O THẮNG";
+        pieceBadgeDiv.innerText = winner === "X" ? "❌" : "⭕";
+        pieceBadgeDiv.style.background = winner === "X" ? "#e63946" : "#3b82f6";
+        statusMsgDiv.innerHTML = `🏆 KẾT THÚC! Người thắng: ${winner}. Hãy tạo phòng mới để chơi tiếp. 🏆`;
+        if (player) {
+          // Nếu có người thắng, không cho phép đánh nữa (nhưng vẫn cho tạo phòng mới)
         }
-        
-        function updateStatusMessage() {
-            const msgDiv = document.getElementById('statusMsg');
-            if(!gameActive) {
-                if(winner === 'X') msgDiv.innerHTML = '🎉 CHIẾN THẮNG THUỘC VỀ ❌ X! BẤM "Ván mới" ĐỂ ĐẤU TIẾP 🎉';
-                else if(winner === 'O') msgDiv.innerHTML = '🎉 CHIẾN THẮNG THUỘC VỀ ⭕ O! BẤM "Ván mới" ĐỂ ĐẤU TIẾP 🎉';
-                else if(isDraw) msgDiv.innerHTML = '🤝 VÁN CỜ HÒA! HÃY BẮT ĐẦU VÁN MỚI 🤝';
-                else msgDiv.innerHTML = '⚡ TRÒ CHƠI KẾT THÚC ⚡';
-                return;
-            }
-            msgDiv.innerHTML = currentTurn === 'X' ? '❌ Đến lượt X — hãy đặt quân lên bàn cờ' : '⭕ Đến lượt O — suy nghĩ chiến thuật nào!';
+        return;
+      }
+      
+      // Nếu chưa có winner, cập nhật lượt bình thường
+      if (player === "X" || player === "O") {
+        if (turn === player) {
+          turnTextSpan.innerText = `Lượt của bạn (${player})`;
+          pieceBadgeDiv.innerText = player;
+          pieceBadgeDiv.style.background = player === "X" ? "#e63946" : "#3b82f6";
+          statusMsgDiv.innerHTML = `✨ Đến lượt bạn (${player}). Hãy đặt quân cờ! ✨`;
+        } else {
+          const opponent = player === "X" ? "O" : "X";
+          turnTextSpan.innerText = `Lượt: ${opponent}`;
+          pieceBadgeDiv.innerText = opponent;
+          pieceBadgeDiv.style.background = opponent === "X" ? "#e63946" : "#3b82f6";
+          statusMsgDiv.innerHTML = `⏳ Đợi đối thủ (${opponent}) đánh... Hãy kiên nhẫn!`;
         }
-        
-        // KIỂM TRA THẮNG (Gomoku chuẩn)
-        function checkWin(row, col, player) {
-            const directions = [[1,0],[0,1],[1,1],[1,-1]];
-            for(let [dx, dy] of directions) {
-                let count = 1;
-                // xuôi
-                for(let step = 1; step <= 4; step++) {
-                    const nr = row + dx*step, nc = col + dy*step;
-                    if(nr<0 || nr>=BOARD_SIZE || nc<0 || nc>=BOARD_SIZE) break;
-                    if(board[nr][nc] === player) count++;
-                    else break;
-                }
-                // ngược
-                for(let step = 1; step <= 4; step++) {
-                    const nr = row - dx*step, nc = col - dy*step;
-                    if(nr<0 || nr>=BOARD_SIZE || nc<0 || nc>=BOARD_SIZE) break;
-                    if(board[nr][nc] === player) count++;
-                    else break;
-                }
-                if(count >= 5) return true;
-            }
-            return false;
-        }
-        
-        function checkDrawFull() {
-            for(let i=0; i<BOARD_SIZE; i++) {
-                for(let j=0; j<BOARD_SIZE; j++) {
-                    if(board[i][j] === null) return false;
-                }
-            }
-            return true;
-        }
-        
-        // Xử lý nước đi
-        function placePiece(row, col) {
-            if(!gameActive) return false;
-            if(row<0 || row>=BOARD_SIZE || col<0 || col>=BOARD_SIZE) return false;
-            if(board[row][col] !== null) return false;
-            
-            // Đặt quân
-            board[row][col] = currentTurn;
-            drawBoard(); // vẽ ngay
-            
-            // Kiểm tra thắng
-            const win = checkWin(row, col, currentTurn);
-            if(win) {
-                gameActive = false;
-                winner = currentTurn;
-                if(winner === 'X') scoreX++;
-                else scoreO++;
-                updateScoreUI();
-                updateTurnUI();
-                updateStatusMessage();
-                drawBoard();
-                return true;
-            }
-            
-            // Hòa
-            const drawFull = checkDrawFull();
-            if(drawFull) {
-                gameActive = false;
-                isDraw = true;
-                winner = null;
-                updateTurnUI();
-                updateStatusMessage();
-                drawBoard();
-                return true;
-            }
-            
-            // Đổi lượt
-            currentTurn = (currentTurn === 'X') ? 'O' : 'X';
-            updateTurnUI();
-            updateStatusMessage();
-            drawBoard();
-            return true;
-        }
-        
-        // ========== VẼ BÀN CỜ SIÊU ĐẸP ==========
-        function drawBoard() {
-            if(!ctx) return;
-            calcDimensions();
-            const w = canvas.width, h = canvas.height;
-            ctx.clearRect(0, 0, w, h);
-            
-            // nền gỗ ấm
-            ctx.fillStyle = '#faf0cf';
-            ctx.fillRect(0, 0, w, h);
-            
-            // Vẽ lưới caro với hiệu ứng mờ
-            ctx.beginPath();
-            ctx.strokeStyle = '#aa7942';
-            ctx.lineWidth = 1.8;
-            for(let i = 0; i < BOARD_SIZE; i++) {
-                const x = offsetX + i * cellSize;
-                const yStart = offsetY;
-                const yEnd = offsetY + (BOARD_SIZE-1) * cellSize;
-                ctx.beginPath();
-                ctx.moveTo(x, yStart);
-                ctx.lineTo(x, yEnd);
-                ctx.stroke();
-                
-                const y = offsetY + i * cellSize;
-                const xStart = offsetX;
-                const xEnd = offsetX + (BOARD_SIZE-1) * cellSize;
-                ctx.beginPath();
-                ctx.moveTo(xStart, y);
-                ctx.lineTo(xEnd, y);
-                ctx.stroke();
-            }
-            
-            // Vẽ các điểm sao (ngôi sao 5 vị trí)
-            const starPoints = [[3,3],[11,3],[7,7],[3,11],[11,11]];
-            for(let [r,c] of starPoints) {
-                const cx = offsetX + c * cellSize;
-                const cy = offsetY + r * cellSize;
-                ctx.beginPath();
-                ctx.arc(cx, cy, cellSize*0.12, 0, 2*Math.PI);
-                ctx.fillStyle = '#cf9f4a';
-                ctx.fill();
-                ctx.beginPath();
-                ctx.arc(cx, cy, cellSize*0.07, 0, 2*Math.PI);
-                ctx.fillStyle = '#ffdd99';
-                ctx.fill();
-            }
-            
-            // Vẽ quân cờ
-            for(let i=0; i<BOARD_SIZE; i++) {
-                for(let j=0; j<BOARD_SIZE; j++) {
-                    const val = board[i][j];
-                    if(val === null) continue;
-                    const cx = offsetX + j * cellSize;
-                    const cy = offsetY + i * cellSize;
-                    const radius = cellSize * 0.38;
-                    ctx.shadowBlur = 3;
-                    ctx.shadowColor = 'rgba(0,0,0,0.3)';
-                    if(val === 'X') {
-                        ctx.beginPath();
-                        ctx.arc(cx, cy, radius, 0, 2*Math.PI);
-                        ctx.fillStyle = '#e34d4d';
-                        ctx.fill();
-                        ctx.strokeStyle = '#a12020';
-                        ctx.lineWidth = 1.6;
-                        ctx.stroke();
-                        // vẽ chữ X tinh tế
-                        ctx.beginPath();
-                        ctx.moveTo(cx - radius*0.6, cy - radius*0.6);
-                        ctx.lineTo(cx + radius*0.6, cy + radius*0.6);
-                        ctx.moveTo(cx + radius*0.6, cy - radius*0.6);
-                        ctx.lineTo(cx - radius*0.6, cy + radius*0.6);
-                        ctx.lineWidth = radius*0.45;
-                        ctx.strokeStyle = '#FFF4CF';
-                        ctx.stroke();
-                    } else if(val === 'O') {
-                        ctx.beginPath();
-                        ctx.arc(cx, cy, radius, 0, 2*Math.PI);
-                        ctx.fillStyle = '#4a7db5';
-                        ctx.fill();
-                        ctx.strokeStyle = '#1f4970';
-                        ctx.lineWidth = 1.6;
-                        ctx.stroke();
-                        ctx.beginPath();
-                        ctx.arc(cx, cy, radius*0.65, 0, 2*Math.PI);
-                        ctx.fillStyle = '#faf0cf';
-                        ctx.fill();
-                        ctx.beginPath();
-                        ctx.arc(cx, cy, radius*0.42, 0, 2*Math.PI);
-                        ctx.fillStyle = '#4a7db5';
-                        ctx.fill();
-                    }
-                }
-            }
-            ctx.shadowBlur = 0;
-            
-            // Overlay khi kết thúc game
-            if(!gameActive) {
-                ctx.fillStyle = 'rgba(0,0,0,0.65)';
-                ctx.fillRect(0, 0, w, h);
-                ctx.font = `bold ${Math.floor(cellSize * 1.3)}px "Segoe UI", "Poppins"`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                let msg = '';
-                if(winner === 'X') msg = '❌ X CHIẾN THẮNG!';
-                else if(winner === 'O') msg = '⭕ O CHIẾN THẮNG!';
-                else if(isDraw) msg = '🤝 HÒA CỜ XUẤT SẮC 🤝';
-                else msg = '✨ TRÒ CHƠI KẾT THÚC ✨';
-                ctx.fillStyle = '#FFF5CF';
-                ctx.fillText(msg, w/2, h/2 - 15);
-                ctx.font = `18px monospace`;
-                ctx.fillStyle = '#fce296';
-                ctx.fillText('Nhấn "Ván mới" để tiếp tục', w/2, h/2 + 38);
-                ctx.textAlign = 'left';
-            }
-        }
-        
-        // ========== XỬ LÝ TƯƠNG TÁC CHUỘT/CẢM ỨNG ==========
-        function getBoardIndexFromPixels(clientX, clientY) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const canvasX = (clientX - rect.left) * scaleX;
-            const canvasY = (clientY - rect.top) * scaleY;
-            if(canvasX < offsetX || canvasX > offsetX + (BOARD_SIZE-1)*cellSize) return null;
-            if(canvasY < offsetY || canvasY > offsetY + (BOARD_SIZE-1)*cellSize) return null;
-            let colFloat = (canvasX - offsetX) / cellSize;
-            let rowFloat = (canvasY - offsetY) / cellSize;
-            let col = Math.round(colFloat);
-            let row = Math.round(rowFloat);
-            if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) return null;
-            const centerX = offsetX + col * cellSize;
-            const centerY = offsetY + row * cellSize;
-            const dist = Math.hypot(canvasX - centerX, canvasY - centerY);
-            if(dist > cellSize * 0.45) return null;
-            return { row, col };
-        }
-        
-        function handleCanvasTap(e) {
-            if(!gameActive) return;
-            e.preventDefault();
-            let clientX, clientY;
-            if(e.touches) {
-                if(e.touches.length === 0) return;
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
-            } else {
-                clientX = e.clientX;
-                clientY = e.clientY;
-            }
-            const pos = getBoardIndexFromPixels(clientX, clientY);
-            if(pos) {
-                placePiece(pos.row, pos.col);
-            }
-        }
-        
-        // ========== RESET GAME ==========
-        function resetGameKeepScore() {
-            board = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null));
-            currentTurn = 'X';
-            gameActive = true;
-            winner = null;
-            isDraw = false;
-            updateTurnUI();
-            updateStatusMessage();
-            drawBoard();
-        }
-        
-        function fullResetAll() {
-            scoreX = 0;
-            scoreO = 0;
-            updateScoreUI();
-            board = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null));
-            currentTurn = 'X';
-            gameActive = true;
-            winner = null;
-            isDraw = false;
-            updateTurnUI();
-            updateStatusMessage();
-            drawBoard();
-        }
-        
-        // ========== SỰ KIỆN & KHỞI TẠO ==========
-        function bindEvents() {
-            canvas.addEventListener('click', handleCanvasTap);
-            canvas.addEventListener('touchstart', handleCanvasTap, { passive: false });
-            canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
-            document.getElementById('resetGameBtn').addEventListener('click', () => resetGameKeepScore());
-            document.getElementById('fullResetBtn').addEventListener('click', () => fullResetAll());
-        }
-        
-        function init() {
-            calcDimensions();
-            bindEvents();
-            // khởi tạo bàn cờ trống
-            board = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null));
-            currentTurn = 'X';
-            gameActive = true;
-            winner = null;
-            isDraw = false;
-            scoreX = 0;
-            scoreO = 0;
-            updateScoreUI();
-            updateTurnUI();
-            updateStatusMessage();
-            drawBoard();
-        }
-        
-        init();
-    })();
+      } else {
+        turnTextSpan.innerText = "Chưa tham gia";
+        pieceBadgeDiv.innerText = "?";
+        pieceBadgeDiv.style.background = "#aa8c54";
+      }
+      
+      // Cập nhật mã phòng hiển thị
+      roomCodeDisplaySpan.innerHTML = `🔑 Mã phòng: ${room}`;
+    });
+  }
+  
+  // Reset UI khi rời phòng
+  function resetRoomUI() {
+    room = "";
+    player = "";
+    currentBoardData = Array(225).fill("");
+    currentTurn = "X";
+    if (boardContainer) {
+      // Xóa hết nội dung bàn cờ
+      const cells = boardContainer.querySelectorAll(".cell");
+      if (cells.length) {
+        cells.forEach(cell => {
+          cell.innerText = "";
+          cell.setAttribute("data-value", "");
+        });
+      }
+    }
+    turnTextSpan.innerText = "Chưa vào phòng";
+    pieceBadgeDiv.innerText = "🎮";
+    pieceBadgeDiv.style.background = "#aa8c54";
+    roomCodeDisplaySpan.innerHTML = "🏠 Chưa có phòng";
+    statusMsgDiv.innerHTML = "✨ Tạo hoặc tham gia phòng để chơi cùng bạn bè ✨";
+  }
+  
+  // Tạo phòng mới (giữ nguyên logic cơ bản nhưng giao diện đẹp)
+  function createNewRoom() {
+    const newRoomId = "room_" + Math.floor(Math.random() * 100000);
+    room = newRoomId;
+    player = "X";
+    
+    // Khởi tạo data trên firebase
+    const initialBoard = Array(225).fill("");
+    db.ref(room).set({
+      board: initialBoard,
+      turn: "X",
+      winner: null,
+      gameOver: false
+    }).then(() => {
+      // Xây dựng bàn cờ lần đầu
+      buildBoardGrid();
+      subscribeToRoom();
+      statusMsgDiv.innerHTML = `🎲 Đã tạo phòng: ${room}. Chia sẻ mã này để bạn bè vào (vai O). Bạn là X!`;
+      // focus
+    }).catch(err => {
+      console.error(err);
+      statusMsgDiv.innerHTML = "Lỗi tạo phòng, thử lại!";
+      room = "";
+      player = "";
+    });
+  }
+  
+  // Tham gia phòng với vai O
+  function joinExistingRoom() {
+    const roomCode = roomIdInput.value.trim();
+    if (!roomCode) {
+      statusMsgDiv.innerHTML = "⚠️ Nhập mã phòng trước khi tham gia!";
+      return;
+    }
+    const roomRef = db.ref(roomCode);
+    roomRef.once("value", (snapshot) => {
+      const data = snapshot.val();
+      if (!data) {
+        statusMsgDiv.innerHTML = "❌ Phòng không tồn tại! Hãy kiểm tra lại mã.";
+        return;
+      }
+      // Nếu đã có người thắng hoặc game over?
+      if (data.winner && data.winner !== "") {
+        statusMsgDiv.innerHTML = `⚠️ Phòng này đã kết thúc (${data.winner} thắng). Hãy tạo phòng mới.`;
+        return;
+      }
+      // Kiểm tra nếu đã có đủ 2 người? Nhưng cơ chế đơn giản, O có thể join
+      // Nếu đã có người chơi O trong data? (chưa lưu nhưng không quan trọng, vẫn cho join với vai O)
+      room = roomCode;
+      player = "O";
+      buildBoardGrid();
+      subscribeToRoom();
+      statusMsgDiv.innerHTML = `✅ Đã tham gia phòng ${room} với vai O. Chờ đối thủ (X) hoặc bắt đầu!`;
+    }).catch(err => {
+      statusMsgDiv.innerHTML = "Lỗi kết nối!";
+    });
+  }
+  
+  // Reset toàn bộ giao diện khi muốn rời phòng (không rời tự động, nhưng khi tạo mới sẽ reset)
+  function leaveAndReset() {
+    if (room) {
+      // không xóa data trên firebase, chỉ hủy theo dõi
+      db.ref(room).off();
+    }
+    resetRoomUI();
+  }
+  
+  // Sự kiện nút bấm (nâng cấp giao diện, giữ nguyên core)
+  createRoomBtn.addEventListener("click", () => {
+    leaveAndReset();
+    createNewRoom();
+  });
+  
+  joinRoomBtn.addEventListener("click", () => {
+    if (room) {
+      // Nếu đang ở phòng cũ, hủy theo dõi trước
+      db.ref(room).off();
+    }
+    resetRoomUI();
+    joinExistingRoom();
+  });
+  
+  // Khởi tạo bàn cờ trống lúc đầu (chưa có phòng)
+  function initEmptyBoard() {
+    boardContainer.innerHTML = "";
+    for (let i = 0; i < 225; i++) {
+      const cell = document.createElement("div");
+      cell.className = "cell";
+      cell.setAttribute("data-index", i);
+      cell.addEventListener("click", (function(idx) {
+        return function() { 
+          if (!room) statusMsgDiv.innerText = "Hãy tạo hoặc tham gia phòng trước!";
+          else onCellClick(idx);
+        };
+      })(i));
+      boardContainer.appendChild(cell);
+    }
+    resetRoomUI();
+  }
+  
+  initEmptyBoard();
 </script>
 </body>
 </html>

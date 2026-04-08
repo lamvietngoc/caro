@@ -62,8 +62,6 @@ function startGame() {
       c.innerText = data.board[i];
     });
   });
-  console.log("Player:", player);
-console.log("Room:", room);
 }
 
 function move(i) {

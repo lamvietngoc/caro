@@ -17,7 +17,7 @@ let room = "";
 let player = "";
 
 function createRoom() {
-  room = "room_" + Math.floor(Math.random() * 10000);
+  room = "Math.floor(Math.random() * 10000);
   player = "X";
   alert("Mã phòng: " + room);
 

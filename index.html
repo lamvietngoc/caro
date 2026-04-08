@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Caro Online</title>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <style>
+    body { text-align:center; font-family: Arial; }
+    #board { display:grid; grid-template-columns: repeat(15, 30px); gap:2px; justify-content:center; }
+    .cell { width:30px; height:30px; background:#eee; cursor:pointer; font-size:20px; }
+  </style>
+</head>
+<body>
+
+<h1>🎮 Caro Online</h1>
+<button onclick="createRoom()">Tạo phòng</button>
+<input id="roomId" placeholder="Nhập mã phòng">
+<button onclick="joinRoom()">Vào phòng</button>
+
+<div id="board"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -116,22 +116,28 @@
       padding: 16px;
       box-shadow: inset 0 0 0 3px #fcf3cf, 0 12px 24px rgba(0,0,0,0.4);
     }
-    .board { 
-      display: grid; 
-      grid-template-columns: repeat(15, 1fr);  /* thay 30px thành 1fr */
-      gap: 2px; 
-      justify-content: center;
-      max-width: 100%;
-      aspect-ratio: 1 / 1;  /* giữ tỷ lệ vuông */
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(15, minmax(0, 1fr));
+      background-color: #faf0cf;
+      border-radius: 24px;
+      overflow: hidden;
+      aspect-ratio: 1 / 1;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
-    .cell { 
-      aspect-ratio: 1 / 1;   /* ô vuông tự động */
-      background: #eee; 
-      cursor: pointer; 
-      font-size: clamp(12px, 4vw, 20px);  /* chữ tự co giãn */
+    .cell {
+      aspect-ratio: 1 / 1;
+      background: #faf0cf;
+      border: 1px solid #c49a6c;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 1.7rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.05s linear;
+      font-family: 'Segoe UI', system-ui;
+      text-shadow: 0 1px 1px white;
     }
     .cell:active {
       background: #ecdcaa;
@@ -227,11 +233,6 @@
     .highlight-turn {
       transition: 0.1s;
     }
-    @media (max-width: 600px) {
-  #board {
-    gap: 1px;
-  }
-}s
   </style>
 </head>
 <body>
